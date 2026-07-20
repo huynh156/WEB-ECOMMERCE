@@ -1,0 +1,159 @@
+@model IEnumerable<FashionHubWeb.Models.Order>
+@{
+    ViewData["Title"] = "Order History";
+}
+
+<div class="container py-5 mt-5" style="min-height: 70vh;">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active text-primary" aria-current="page">Order History</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm p-4 rounded-3" style="background-color: #FAF6F0;">
+                <h5 class="fw-bold mb-4">My Account</h5>
+                <div class="nav flex-column nav-pills">
+                    <a class="nav-link active py-3 px-4 rounded-pill fw-bold" href="#">
+                        <i class="fas fa-shopping-bag me-3"></i>Order History
+                    </a>
+                    <a class="nav-link py-3 px-4 rounded-pill fw-bold text-muted" asp-controller="Cart" asp-action="Index">
+                        <i class="fas fa-shopping-cart me-3"></i>My Cart
+                    </a>
+                    <a class="nav-link py-3 px-4 rounded-pill fw-bold text-muted" asp-controller="Account" asp-action="Logout">
+                        <i class="fas fa-sign-out-alt me-3"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders list -->
+        <div class="col-lg-9">
+            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
+                <h3 class="fw-bold mb-4">Your Orders</h3>
+
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <div class="mb-4 text-muted" style="font-size: 4rem;">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <h4 class="fw-bold text-muted">No Orders Found</h4>
+                        <p class="text-muted mb-4">You haven't placed any orders yet.</p>
+                        <a asp-controller="Shop" asp-action="Index" class="btn btn-primary px-5 py-3 rounded-pill fw-bold">Shop Now</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="accordion accordion-flush" id="ordersAccordion">
+                        @foreach (var order in Model)
+                        {
+                            var accordionId = $"order_{order.OrderId}";
+                            var statusBadgeClass = order.Status switch
+                            {
+                                "Pending" => "bg-warning text-dark",
+                                "Processing" => "bg-info text-white",
+                                "Shipped" => "bg-primary text-white",
+                                "Completed" => "bg-success text-white",
+                                "Cancelled" => "bg-danger text-white",
+                                _ => "bg-secondary text-white"
+                            };
+
+                            <div class="accordion-item border-bottom mb-3 rounded shadow-sm overflow-hidden border">
+                                <h2 class="accordion-header" id="heading_@accordionId">
+                                    <button class="accordion-button collapsed p-3 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@accordionId" aria-expanded="false" aria-controls="collapse_@accordionId">
+                                        <div class="w-100 d-md-flex justify-content-between align-items-center pe-3">
+                                            <div class="mb-2 mb-md-0">
+                                                <span class="fw-bold text-dark block">Order #@order.OrderId.Substring(0, Math.Min(8, order.OrderId.Length)).ToUpper()</span>
+                                                <small class="text-muted ms-2">@(order.OrderDate?.ToString("MMMM dd, yyyy") ?? "")</small>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <span class="badge @statusBadgeClass px-3 py-2 rounded-pill fw-semibold">@order.Status</span>
+                                                <span class="fw-bold text-primary fs-5">$@order.TotalAmount.ToString("0.00")</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse_@accordionId" class="accordion-collapse collapse" aria-labelledby="heading_@accordionId" data-bs-parent="#ordersAccordion">
+                                    <div class="accordion-body bg-white p-4">
+                                        <!-- Delivery/Shipping Info -->
+                                        <div class="row mb-4 pb-3 border-bottom">
+                                            <div class="col-md-6 mb-3 mb-md-0">
+                                                <h6 class="fw-bold text-muted uppercase fs-7 tracking-wider mb-2">Shipping Address</h6>
+                                                <p class="mb-1 fw-bold text-dark">@order.FullName</p>
+                                                <p class="mb-1 text-muted">@order.Address</p>
+                                                <p class="mb-0 text-muted"><i class="fas fa-phone me-2 text-primary"></i>@order.PhoneNumber</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="fw-bold text-muted uppercase fs-7 tracking-wider mb-2">Payment Details</h6>
+                                                <p class="mb-1 text-dark"><span class="fw-semibold">Method:</span> @order.PaymentMethod</p>
+                                                <p class="mb-1 text-dark"><span class="fw-semibold">Shipping:</span> @order.ShippingMethod</p>
+                                                @if (order.ExpectedDeliveryDate.HasValue)
+                                                {
+                                                    <p class="mb-0 text-muted"><i class="far fa-calendar-alt me-2 text-primary"></i>Expected delivery: @order.ExpectedDeliveryDate.Value.ToString("yyyy-MM-dd")</p>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Order Items list -->
+                                        <h6 class="fw-bold text-muted uppercase fs-7 tracking-wider mb-3">Order Items</h6>
+                                        <div class="table-responsive">
+                                            <table class="table align-middle table-borderless">
+                                                <thead>
+                                                    <tr class="text-muted border-bottom" style="font-size: 0.85rem;">
+                                                        <th scope="col" style="width: 50%;">Product Details</th>
+                                                        <th scope="col" class="text-center">Quantity</th>
+                                                        <th scope="col" class="text-end">Unit Price</th>
+                                                        <th scope="col" class="text-end">Total Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var detail in order.OrderDetails)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-3">
+                                                                    <img src="@detail.Product.Image" alt="@detail.Product.ProductName" class="rounded object-fit-cover" style="width: 60px; height: 60px;" />
+                                                                    <div>
+                                                                        <span class="text-xs text-uppercase tracking-wider fw-bold text-muted d-block" style="font-size: 0.75rem;">@detail.Product.Brand?.BrandName</span>
+                                                                        <a asp-controller="Shop" asp-action="Details" asp-route-id="@detail.Product.ProductId" class="fw-bold text-dark text-decoration-none hover-primary">@detail.Product.ProductName</a>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-center fw-semibold text-dark">@detail.Quantity</td>
+                                                            <td class="text-end text-muted">$@(detail.Product?.Price.ToString("0.00") ?? "0.00")</td>
+                                                            <td class="text-end fw-bold text-dark">$@((detail.Quantity * (detail.Product?.Price ?? 0m)).ToString("0.00"))</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .hover-primary:hover {
+            color: var(--bs-primary) !important;
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: #FAF6F0;
+            color: var(--bs-primary);
+        }
+        .accordion-button::after {
+            background-size: 1rem;
+        }
+    </style>
+}
