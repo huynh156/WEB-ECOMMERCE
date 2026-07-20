@@ -41,7 +41,10 @@ namespace FashionHubWeb.Controllers
 
             if (!string.IsNullOrEmpty(query))
             {
-                products = products.Where(p => p.ProductName.Contains(query));
+                var term = query.ToLower().Trim();
+                products = products.Where(p => p.ProductName.ToLower().Contains(term)
+                                            || (p.Category != null && p.Category.CategoryName.ToLower().Contains(term))
+                                            || (p.Brand != null && p.Brand.BrandName.ToLower().Contains(term)));
             }
 
             if (!string.IsNullOrEmpty(category))
@@ -86,6 +89,37 @@ namespace FashionHubWeb.Controllers
             ViewBag.WishlistProductIds = await GetWishlistProductIdsAsync();
 
             return View(product);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchAutocomplete(string query)
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return Json(new List<object>());
+            }
+
+            var term = query.ToLower().Trim();
+
+            var matches = await _context.Products
+                .Include(p => p.Brand)
+                .Include(p => p.Category)
+                .Where(p => p.ProductName.ToLower().Contains(term)
+                         || (p.Category != null && p.Category.CategoryName.ToLower().Contains(term))
+                         || (p.Brand != null && p.Brand.BrandName.ToLower().Contains(term)))
+                .Take(5)
+                .Select(p => new
+                {
+                    productId = p.ProductId,
+                    productName = p.ProductName,
+                    brandName = p.Brand != null ? p.Brand.BrandName : "",
+                    categoryName = p.Category != null ? p.Category.CategoryName : "",
+                    price = p.Price,
+                    image = p.Image
+                })
+                .ToListAsync();
+
+            return Json(matches);
         }
     }
 }

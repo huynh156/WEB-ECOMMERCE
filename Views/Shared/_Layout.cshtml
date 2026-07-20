@@ -55,12 +55,14 @@
                         </li>
                     </ul>
                     
-                    <form class="d-flex me-3" asp-controller="Shop" asp-action="Index" method="get">
+                    <form class="d-flex me-3 position-relative" asp-controller="Shop" asp-action="Index" method="get" id="globalSearchForm" style="width: 280px;">
                         <div class="input-group">
-                            <input class="form-control search-bar border-end-0" type="search" name="query" placeholder="Search products..." aria-label="Search">
+                            <input class="form-control search-bar border-end-0" type="search" id="globalSearchInput" name="query" placeholder="Search products..." aria-label="Search" autocomplete="off">
                             <button class="btn btn-outline-secondary bg-white border-start-0 search-bar" type="submit" style="border-radius: 0 30px 30px 0;">
                                 <i class="fas fa-search"></i>
                             </button>
+                        </div>
+                        <div id="searchSuggestions" class="list-group position-absolute w-100 shadow mt-1 d-none" style="z-index: 1050; top: 100%; border-radius: 8px; overflow: hidden; background: white; max-height: 350px; overflow-y: auto;">
                         </div>
                     </form>
                     
@@ -237,6 +239,65 @@
         }
 
         $(document).ready(function() {
+            // Autocomplete Instant Search
+            var searchTimeout = null;
+            $('#globalSearchInput').on('input focus', function() {
+                var query = $(this).val().trim();
+                clearTimeout(searchTimeout);
+                
+                if (query.length < 2) {
+                    $('#searchSuggestions').addClass('d-none').empty();
+                    return;
+                }
+                
+                searchTimeout = setTimeout(function() {
+                    $.ajax({
+                        url: '/Shop/SearchAutocomplete',
+                        type: 'GET',
+                        data: { query: query },
+                        success: function(data) {
+                            var suggestions = $('#searchSuggestions');
+                            suggestions.empty();
+                            
+                            if (data.length > 0) {
+                                $.each(data, function(index, item) {
+                                    var itemHtml = `
+                                        <a href="/Shop/Details/${item.productId}" class="list-group-item list-group-item-action d-flex align-items-center py-2 px-3 border-bottom border-light">
+                                            <img src="${item.image}" alt="${item.productName}" class="rounded me-2" style="width: 45px; height: 45px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/45?text=No+Image';this.onerror=null;">
+                                            <div class="text-start" style="flex-grow: 1; min-width: 0;">
+                                                <div class="fw-bold text-truncate text-dark" style="font-size: 0.8rem; line-height: 1.2;">${item.productName}</div>
+                                                <div class="text-muted text-truncate" style="font-size: 0.7rem;">${item.brandName} • ${item.categoryName}</div>
+                                            </div>
+                                            <div class="fw-bold text-primary ms-2" style="font-size: 0.8rem;">$${item.price.toFixed(2)}</div>
+                                        </a>
+                                    `;
+                                    suggestions.append(itemHtml);
+                                });
+                                suggestions.removeClass('d-none');
+                            } else {
+                                suggestions.append('<div class="list-group-item text-center text-muted py-3 small">No products found</div>');
+                                suggestions.removeClass('d-none');
+                            }
+                        }
+                    });
+                }, 300);
+            });
+
+            // Hide suggestions when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#globalSearchForm').length) {
+                    $('#searchSuggestions').addClass('d-none');
+                }
+            });
+
+            // Re-show suggestions if user focuses back on the input
+            $('#globalSearchInput').on('focus', function() {
+                var query = $(this).val().trim();
+                if (query.length >= 2 && $('#searchSuggestions').children().length > 0) {
+                    $('#searchSuggestions').removeClass('d-none');
+                }
+            });
+
             $(document).on('submit', 'form[action*="/Cart/Add"]', function(e) {
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
