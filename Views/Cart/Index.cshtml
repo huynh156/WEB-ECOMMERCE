@@ -39,7 +39,7 @@
                                         <tr>
                                             <td>
                                                 <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.ProductId" class="d-flex align-items-center text-decoration-none text-dark">
-                                                    <img src="@item.Product?.Image" alt="@item.Product?.ProductName" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/80?text=No+Image';">
+                                                    <img src="@item.Product?.Image" alt="@item.Product?.ProductName" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/80?text=No+Image';this.onerror=null;">
                                                     <div>
                                                         <h6 class="mb-0 fw-bold">@item.Product?.ProductName</h6>
                                                         <small class="text-muted">@item.Product?.Brand?.BrandName</small>

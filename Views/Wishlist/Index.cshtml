@@ -22,7 +22,7 @@
             {
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="card h-100 shadow-sm border-0">
-                        <img src="@item.Product?.Image" class="card-img-top" alt="@item.Product?.ProductName" style="height: 250px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/250?text=No+Image';">
+                        <img src="@item.Product?.Image" class="card-img-top" alt="@item.Product?.ProductName" style="height: 250px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/250?text=No+Image';this.onerror=null;">
                         <div class="card-body text-center">
                             <p class="text-muted small mb-1">@item.Product?.Brand?.BrandName</p>
                             <h5 class="card-title text-truncate" title="@item.Product?.ProductName">@item.Product?.ProductName</h5>

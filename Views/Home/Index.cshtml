@@ -56,7 +56,7 @@
                 var isWishlisted = ViewBag.WishlistProductIds != null && ((List<string>)ViewBag.WishlistProductIds).Contains(item.ProductId);
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="card h-100 shadow-sm border-0 product-card overflow-hidden position-relative bg-white rounded-3">
-                        <img src="@item.Image" class="card-img-top object-fit-cover" alt="@item.ProductName" style="height: 280px; transition: transform 0.5s ease;" onerror="this.src='https://via.placeholder.com/280?text=No+Image';">
+                        <img src="@item.Image" class="card-img-top object-fit-cover" alt="@item.ProductName" style="height: 280px; transition: transform 0.5s ease;" onerror="this.src='https://via.placeholder.com/280?text=No+Image';this.onerror=null;">
                         
                         <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
                             <button class="btn btn-light shadow-sm btn-wishlist rounded-circle" data-product-id="@item.ProductId" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none;">
@@ -93,7 +93,7 @@
             var isWishlisted = ViewBag.WishlistProductIds != null && ((List<string>)ViewBag.WishlistProductIds).Contains(item.ProductId);
             <div class="col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 shadow-sm border-0 product-card overflow-hidden position-relative bg-white rounded-3">
-                    <img src="@item.Image" class="card-img-top object-fit-cover" alt="@item.ProductName" style="height: 320px; transition: transform 0.5s ease;" onerror="this.src='https://via.placeholder.com/320?text=No+Image';">
+                    <img src="@item.Image" class="card-img-top object-fit-cover" alt="@item.ProductName" style="height: 320px; transition: transform 0.5s ease;" onerror="this.src='https://via.placeholder.com/320?text=No+Image';this.onerror=null;">
                     
                     <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
                         <button class="btn btn-light shadow-sm btn-wishlist rounded-circle" data-product-id="@item.ProductId" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none;">
