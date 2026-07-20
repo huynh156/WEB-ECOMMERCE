@@ -1,0 +1,94 @@
+@model IEnumerable<FashionHubWeb.Models.Cart>
+@{
+    ViewData["Title"] = "Shopping Cart";
+    decimal total = Model.Sum(c => (c.Product?.Price ?? 0m) * c.Quantity);
+}
+
+<div class="container mt-5">
+    <h1 class="fw-bold mb-4">Your Shopping Cart</h1>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 bg-white rounded shadow-sm">
+            <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+            <h3>Your cart is empty</h3>
+            <p class="text-muted">Looks like you haven't added anything yet.</p>
+            <a asp-controller="Shop" asp-action="Index" class="btn btn-primary mt-3 px-4 py-2">Start Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.ProductId" class="d-flex align-items-center text-decoration-none text-dark">
+                                                    <img src="@item.Product?.Image" alt="@item.Product?.ProductName" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/80?text=No+Image';">
+                                                    <div>
+                                                        <h6 class="mb-0 fw-bold">@item.Product?.ProductName</h6>
+                                                        <small class="text-muted">@item.Product?.Brand?.BrandName</small>
+                                                    </div>
+                                                </a>
+                                            </td>
+                                            <td>$@item.Product?.Price</td>
+                                            <td>
+                                                <div class="input-group" style="width: 100px;">
+                                                    <input type="number" class="form-control text-center" value="@item.Quantity" readonly>
+                                                </div>
+                                            </td>
+                                            <td class="fw-bold">$@((item.Product?.Price * item.Quantity)?.ToString("0.00"))</td>
+                                            <td>
+                                                <form asp-action="Remove" method="post">
+                                                    <input type="hidden" name="cartId" value="@item.CartId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-4">Order Summary</h4>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Subtotal</span>
+                            <span class="fw-semibold">$@total.ToString("0.00")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Shipping</span>
+                            <span class="fw-semibold">Free</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="fw-bold fs-5">Total</span>
+                            <span class="fw-bold fs-5 text-primary">$@total.ToString("0.00")</span>
+                        </div>
+                        <a asp-controller="Cart" asp-action="CheckOut" class="btn btn-primary w-100 py-3 rounded-pill fw-bold">Proceed to Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

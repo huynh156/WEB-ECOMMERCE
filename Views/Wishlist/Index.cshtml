@@ -1,0 +1,50 @@
+@model IEnumerable<FashionHubWeb.Models.Wishlist>
+@{
+    ViewData["Title"] = "My Wishlist";
+}
+
+<div class="container mt-5">
+    <h1 class="fw-bold mb-4">My Wishlist</h1>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 bg-white rounded shadow-sm">
+            <i class="fas fa-heart fa-4x text-muted mb-3 opacity-20"></i>
+            <h3>Your wishlist is empty</h3>
+            <p class="text-muted">Explore our shop and save your favorite items here!</p>
+            <a asp-controller="Shop" asp-action="Index" class="btn btn-primary mt-3 px-4 py-2">Start Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <img src="@item.Product?.Image" class="card-img-top" alt="@item.Product?.ProductName" style="height: 250px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/250?text=No+Image';">
+                        <div class="card-body text-center">
+                            <p class="text-muted small mb-1">@item.Product?.Brand?.BrandName</p>
+                            <h5 class="card-title text-truncate" title="@item.Product?.ProductName">@item.Product?.ProductName</h5>
+                            <p class="product-price">$@item.Product?.Price</p>
+                            <div class="d-flex justify-content-center gap-2 mt-3">
+                                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-outline-primary"><i class="fas fa-eye"></i> View</a>
+                                
+                                <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-shopping-cart"></i></button>
+                                </form>
+
+                                <form asp-controller="Wishlist" asp-action="Remove" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@item.WishlistId" />
+                                    <button type="submit" class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
