@@ -103,6 +103,70 @@
     </header>
     
     <div class="flex-grow-1" style="margin-top: 80px;">
+        @if (ViewContext.RouteData.Values["controller"]?.ToString() != "Home" || ViewContext.RouteData.Values["action"]?.ToString() != "Index")
+        {
+            <div class="bg-white py-3 border-bottom mb-4">
+                <div class="container">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                            <li class="breadcrumb-item">
+                                <a asp-controller="Home" asp-action="Index" class="text-muted text-decoration-none text-uppercase"><i class="fas fa-home me-1"></i>Home</a>
+                            </li>
+                            @if (ViewContext.RouteData.Values["controller"]?.ToString() == "Shop")
+                            {
+                                @if (ViewContext.RouteData.Values["action"]?.ToString() == "Index")
+                                {
+                                    <li class="breadcrumb-item active text-dark fw-bold text-uppercase" aria-current="page">Shop</li>
+                                }
+                                else if (ViewContext.RouteData.Values["action"]?.ToString() == "Details")
+                                {
+                                    <li class="breadcrumb-item">
+                                        <a asp-controller="Shop" asp-action="Index" class="text-muted text-decoration-none text-uppercase">Shop</a>
+                                    </li>
+                                    @if (ViewData["CategoryName"] != null)
+                                    {
+                                        <li class="breadcrumb-item">
+                                            <a asp-controller="Shop" asp-action="Index" asp-route-category="@ViewData["CategoryId"]" class="text-muted text-decoration-none text-uppercase">@ViewData["CategoryName"]</a>
+                                        </li>
+                                    }
+                                    <li class="breadcrumb-item active text-dark fw-bold text-uppercase" aria-current="page">@ViewData["Title"]</li>
+                                }
+                            }
+                            else if (ViewContext.RouteData.Values["controller"]?.ToString() == "Cart")
+                            {
+                                @if (ViewContext.RouteData.Values["action"]?.ToString() == "Index")
+                                {
+                                    <li class="breadcrumb-item active text-dark fw-bold text-uppercase" aria-current="page">Shopping Bag</li>
+                                }
+                                else if (ViewContext.RouteData.Values["action"]?.ToString() == "CheckOut")
+                                {
+                                    <li class="breadcrumb-item">
+                                        <a asp-controller="Cart" asp-action="Index" class="text-muted text-decoration-none text-uppercase">Shopping Bag</a>
+                                    </li>
+                                    <li class="breadcrumb-item active text-dark fw-bold text-uppercase" aria-current="page">Checkout</li>
+                                }
+                                else
+                                {
+                                    <li class="breadcrumb-item active text-dark fw-bold text-uppercase" aria-current="page">@ViewData["Title"]</li>
+                                }
+                            }
+                            else if (ViewContext.RouteData.Values["controller"]?.ToString() == "Account")
+                            {
+                                <li class="breadcrumb-item active text-dark fw-bold text-uppercase" aria-current="page">@ViewData["Title"]</li>
+                            }
+                            else if (ViewContext.RouteData.Values["controller"]?.ToString() == "Wishlist")
+                            {
+                                <li class="breadcrumb-item active text-dark fw-bold text-uppercase" aria-current="page">Wishlist</li>
+                            }
+                            else
+                            {
+                                <li class="breadcrumb-item active text-dark fw-bold text-uppercase" aria-current="page">@ViewData["Title"]</li>
+                            }
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
