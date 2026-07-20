@@ -1,0 +1,155 @@
+@model IEnumerable<FashionHubWeb.Models.Product>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <!-- Hero Section -->
+    <div class="hero-banner">
+        <h1 class="hero-title">Summer Collection 2026</h1>
+        <p class="lead mb-4">Discover the latest trends in fashion with our new arrivals.</p>
+        <a asp-controller="Shop" asp-action="Index" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">Shop Now</a>
+    </div>
+
+    <!-- Featured Categories -->
+    <div class="row text-center mb-5 mt-5">
+        <h2 class="mb-4 fw-bold">Shop by Category</h2>
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Shop" asp-action="Index" asp-route-category="CAT_BAG" class="text-decoration-none">
+                <div class="card bg-dark text-white border-0 overflow-hidden" style="height: 300px;">
+                    <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="card-img h-100" style="object-fit: cover; opacity: 0.6;" alt="Handbags">
+                    <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                        <h3 class="card-title fw-bold text-white">Handbags</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Shop" asp-action="Index" asp-route-category="CAT_RTW" class="text-decoration-none">
+                <div class="card bg-dark text-white border-0 overflow-hidden" style="height: 300px;">
+                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="card-img h-100" style="object-fit: cover; opacity: 0.6;" alt="Ready-to-Wear">
+                    <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                        <h3 class="card-title fw-bold text-white">Ready-to-Wear</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Shop" asp-action="Index" asp-route-category="CAT_SHOE" class="text-decoration-none">
+                <div class="card bg-dark text-white border-0 overflow-hidden" style="height: 300px;">
+                    <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="card-img h-100" style="object-fit: cover; opacity: 0.6;" alt="Shoes">
+                    <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                        <h3 class="card-title fw-bold text-white">Shoes</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Best Sellers -->
+    <h2 class="mb-4 fw-bold text-center mt-5">Best Sellers</h2>
+    <div class="row mb-5">
+        @if (ViewBag.BestSellers != null)
+        {
+            @foreach (var item in (IEnumerable<FashionHubWeb.Models.Product>)ViewBag.BestSellers)
+            {
+                var isWishlisted = ViewBag.WishlistProductIds != null && ((List<string>)ViewBag.WishlistProductIds).Contains(item.ProductId);
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 shadow-sm border-0 product-card overflow-hidden position-relative bg-white rounded-3">
+                        <img src="@item.Image" class="card-img-top object-fit-cover" alt="@item.ProductName" style="height: 280px; transition: transform 0.5s ease;" onerror="this.src='https://via.placeholder.com/280?text=No+Image';">
+                        
+                        <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
+                            <button class="btn btn-light shadow-sm btn-wishlist rounded-circle" data-product-id="@item.ProductId" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none;">
+                                <i class="@(isWishlisted ? "fas fa-heart text-danger" : "far fa-heart text-dark")"></i>
+                            </button>
+                        </div>
+
+                        <div class="card-body text-center d-flex flex-column justify-content-between p-3">
+                            <div>
+                                <p class="text-muted text-uppercase tracking-wider fw-bold mb-1" style="font-size: 0.75rem;">@item.Brand?.BrandName</p>
+                                <h5 class="card-title text-truncate fw-bold fs-6 mb-2" title="@item.ProductName">@item.ProductName</h5>
+                                <p class="product-price fw-bold text-primary mb-3">$@item.Price.ToString("0.00")</p>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-outline-dark rounded-pill fw-bold small py-2">View Details</a>
+                                <form asp-controller="Cart" asp-action="Add" method="post" class="d-grid">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn btn-primary rounded-pill fw-bold small py-2"><i class="fas fa-shopping-bag me-2"></i>Add to Bag</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Latest Products -->
+    <h2 class="mb-4 fw-bold text-center mt-5">New Arrivals</h2>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            var isWishlisted = ViewBag.WishlistProductIds != null && ((List<string>)ViewBag.WishlistProductIds).Contains(item.ProductId);
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 shadow-sm border-0 product-card overflow-hidden position-relative bg-white rounded-3">
+                    <img src="@item.Image" class="card-img-top object-fit-cover" alt="@item.ProductName" style="height: 320px; transition: transform 0.5s ease;" onerror="this.src='https://via.placeholder.com/320?text=No+Image';">
+                    
+                    <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
+                        <button class="btn btn-light shadow-sm btn-wishlist rounded-circle" data-product-id="@item.ProductId" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none;">
+                            <i class="@(isWishlisted ? "fas fa-heart text-danger" : "far fa-heart text-dark")"></i>
+                        </button>
+                    </div>
+
+                    <div class="card-body text-center d-flex flex-column justify-content-between p-3">
+                        <div>
+                            <p class="text-muted text-uppercase tracking-wider fw-bold mb-1" style="font-size: 0.75rem;">@item.Brand?.BrandName</p>
+                            <h5 class="card-title text-truncate fw-bold mb-2" title="@item.ProductName">@item.ProductName</h5>
+                            <p class="product-price fw-bold text-primary mb-3">$@item.Price.ToString("0.00")</p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-outline-dark rounded-pill fw-bold py-2">View Details</a>
+                            <form asp-controller="Cart" asp-action="Add" method="post" class="d-grid">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="btn btn-primary rounded-pill fw-bold py-2"><i class="fas fa-shopping-bag me-2"></i>Add to Bag</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).on('click', '.btn-wishlist', function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            var prodId = btn.data('product-id');
+            
+            $.ajax({
+                url: '/Wishlist/Toggle',
+                type: 'POST',
+                data: { productId: prodId },
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                success: function(response) {
+                    if (response.success) {
+                        var icon = btn.find('i');
+                        if (response.added) {
+                            icon.removeClass('far text-dark').addClass('fas fa-heart text-danger');
+                        } else {
+                            icon.removeClass('fas text-danger').addClass('far fa-heart text-dark');
+                        }
+                    } else {
+                        window.location.href = '/Account/Login';
+                    }
+                },
+                error: function() {
+                    window.location.href = '/Account/Login';
+                }
+            });
+        });
+    </script>
+}

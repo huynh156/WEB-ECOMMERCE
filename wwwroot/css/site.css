@@ -1,0 +1,131 @@
+:root {
+  --primary-pastel: #f4e1d2; /* Peach/Nude Pastel */
+  --secondary-pastel: #e0ece4; /* Mint/Grey Pastel */
+  --accent-pastel: #f1cdd7; /* Pink Pastel */
+  --text-dark: #333333;
+  --text-light: #777777;
+  --bg-light: #fafafa;
+}
+
+body {
+  background-color: var(--bg-light);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-dark);
+}
+
+.navbar {
+  background-color: #ffffff;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: var(--text-dark) !important;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #d89b9b !important;
+}
+
+.btn-primary {
+  background-color: var(--accent-pastel);
+  border-color: var(--accent-pastel);
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #e5b8c4;
+  border-color: #e5b8c4;
+  color: var(--text-dark);
+}
+
+.btn-outline-primary {
+  color: #d89b9b;
+  border-color: #d89b9b;
+}
+
+.btn-outline-primary:hover {
+  background-color: #d89b9b;
+  border-color: #d89b9b;
+  color: #fff;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card-img-top {
+  height: 250px;
+  object-fit: cover;
+}
+
+.product-price {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #d89b9b;
+}
+
+.footer {
+  background-color: #ffffff;
+  padding: 40px 0;
+  border-top: 1px solid #eeeeee;
+  margin-top: 50px;
+}
+
+.hero-banner {
+  background-color: var(--primary-pastel);
+  padding: 100px 0;
+  border-radius: 20px;
+  margin: 30px 0;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: var(--text-dark);
+}
+
+.search-bar {
+  border-radius: 30px;
+  padding-left: 20px;
+}
+
+/* Premium Product Card Hover Zoom */
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+.btn-wishlist {
+    transition: all 0.3s ease;
+}
+.btn-wishlist:hover {
+    transform: scale(1.15);
+}
+
+/* Offcanvas custom styling */
+.offcanvas {
+    background-color: #FAF8F5;
+}
+.offcanvas-header {
+    background-color: #ffffff;
+}

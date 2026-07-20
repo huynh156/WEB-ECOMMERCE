@@ -1,0 +1,211 @@
+@inject FashionHubWeb.Models.FashionHubContext _context
+@using System.Security.Claims
+@{
+    int cartCount = 0;
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        string? userId = null;
+        if (!string.IsNullOrEmpty(email))
+        {
+            userId = _context.Users.FirstOrDefault(u => u.Email == email)?.UserId;
+        }
+        if (userId == null)
+        {
+            userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+        
+        if (userId != null)
+        {
+            cartCount = _context.Carts.Where(c => c.UserId == userId).Sum(c => c.Quantity);
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FashionHub</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FashionHubWeb.styles.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-white">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FashionHub</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Shop" asp-action="Index">Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Products" asp-action="Index">Admin Panel</a>
+                        </li>
+                    </ul>
+                    
+                    <form class="d-flex me-3" asp-controller="Shop" asp-action="Index" method="get">
+                        <div class="input-group">
+                            <input class="form-control search-bar border-end-0" type="search" name="query" placeholder="Search products..." aria-label="Search">
+                            <button class="btn btn-outline-secondary bg-white border-start-0 search-bar" type="submit" style="border-radius: 0 30px 30px 0;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <ul class="navbar-nav">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle"></i> @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Orders">Order History</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">
+                                    <i class="fas fa-user"></i> Login
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Wishlist" asp-action="Index">
+                                <i class="fas fa-heart"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#miniCartDrawer" aria-controls="miniCartDrawer" onclick="loadMiniCart()">
+                                <i class="fas fa-shopping-bag"></i> <span id="cart-badge" class="badge bg-danger rounded-pill">@cartCount</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="flex-grow-1" style="margin-top: 80px;">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer mt-auto py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-uppercase fw-bold mb-4">FashionHub</h5>
+                    <p>Elevate your style with our premium collection of clothing and accessories.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-uppercase fw-bold mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none text-muted">About Us</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Contact</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-uppercase fw-bold mb-4">Newsletter</h5>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Your email address">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center text-muted">
+                &copy; 2026 - FashionHub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Offcanvas Mini Cart Drawer -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="miniCartDrawer" aria-labelledby="miniCartLabel" style="width: 420px; max-width: 100vw; border-left: none;">
+        <!-- Loaded via AJAX -->
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+        <div id="cartToast" class="toast align-items-center text-white bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle text-success me-2"></i> Product added to cart successfully!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script>
+        function loadMiniCart() {
+            $.ajax({
+                url: '/Cart/GetMiniCart',
+                type: 'GET',
+                success: function(response) {
+                    $('#miniCartDrawer').html(response);
+                },
+                error: function() {
+                    $('#miniCartDrawer').html('<div class="p-4 text-center text-muted">Failed to load bag contents.</div>');
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $(document).on('submit', 'form[action*="/Cart/Add"]', function(e) {
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <text>
+                    e.preventDefault();
+                    var form = $(this);
+                    $.ajax({
+                        url: form.attr('action') || '/Cart/Add',
+                        type: 'POST',
+                        data: form.serialize(),
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                $('#cart-badge').text(response.cartCount);
+                                loadMiniCart();
+                                var drawerElement = document.getElementById('miniCartDrawer');
+                                var drawer = bootstrap.Offcanvas.getInstance(drawerElement) || new bootstrap.Offcanvas(drawerElement);
+                                drawer.show();
+                            } else {
+                                alert('Failed to add product to cart.');
+                            }
+                        },
+                        error: function() {
+                            alert('An error occurred. Please try again.');
+                        }
+                    });
+                    </text>
+                }
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
