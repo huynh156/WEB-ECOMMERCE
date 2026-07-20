@@ -1,0 +1,70 @@
+@model IEnumerable<FashionHubWeb.Models.Cart>
+@{
+    var totalAmount = Model.Sum(item => (item.Product?.Price ?? 0m) * item.Quantity);
+}
+
+<div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title fw-bold" id="miniCartLabel">SHOPPING BAG (@Model.Sum(i => i.Quantity))</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+
+<div class="offcanvas-body d-flex flex-column justify-content-between p-4" style="background-color: #FCFBF7;">
+    @if (!Model.Any())
+    {
+        <div class="text-center my-auto">
+            <div class="mb-4 text-muted" style="font-size: 3.5rem;">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h5 class="fw-bold text-muted mb-3">Your bag is empty</h5>
+            <p class="text-muted mb-4 small">Add some luxury items to get started!</p>
+            <a asp-controller="Shop" asp-action="Index" class="btn btn-primary px-4 py-2 rounded-pill fw-bold" data-bs-dismiss="offcanvas">Shop Now</a>
+        </div>
+    }
+    else
+    {
+        <div class="flex-grow-1 overflow-y-auto mb-4 pe-2" style="max-height: 55vh;">
+            @foreach (var item in Model)
+            {
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-4 border-bottom">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="@item.Product?.Image" alt="@item.Product?.ProductName" class="rounded object-fit-cover" style="width: 70px; height: 70px;" />
+                        <div>
+                            <span class="text-xs text-uppercase tracking-wider fw-bold text-muted d-block" style="font-size: 0.7rem;">@item.Product?.Brand?.BrandName</span>
+                            <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.Product?.ProductId" class="fw-bold text-dark text-decoration-none small hover-primary" style="font-size: 0.9rem;">@item.Product?.ProductName</a>
+                            <div class="mt-1">
+                                <span class="text-muted small">Qty: @item.Quantity</span>
+                                <span class="fw-bold text-primary ms-3 small">$@((item.Product?.Price ?? 0m).ToString("0.00"))</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- Remove button -->
+                        <form asp-controller="Cart" asp-action="Remove" method="post" style="display:inline;">
+                            <input type="hidden" name="cartId" value="@item.CartId" />
+                            <button type="submit" class="btn btn-link text-muted p-0 border-0 hover-danger">
+                                <i class="fas fa-trash-alt" style="font-size: 0.85rem;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="border-top pt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="fw-bold text-muted small">SUBTOTAL</span>
+                <span class="fw-bold fs-4 text-primary">$@totalAmount.ToString("0.00")</span>
+            </div>
+            <div class="d-grid gap-2">
+                <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-primary py-3 rounded-pill fw-bold small">VIEW BAG</a>
+                <a asp-controller="Cart" asp-action="CheckOut" class="btn btn-primary py-3 rounded-pill fw-bold text-white small">PROCEED TO CHECKOUT</a>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-danger:hover {
+        color: var(--bs-danger) !important;
+    }
+</style>
