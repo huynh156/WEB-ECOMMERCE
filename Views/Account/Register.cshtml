@@ -1,0 +1,75 @@
+@model FashionHubWeb.Models.RegisterVM
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container py-5 my-5 d-flex justify-content-center">
+    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4" style="max-width: 550px; width: 100%;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold tracking-wider text-uppercase text-dark" style="font-size: 1.6rem; letter-spacing: 2px;">Create Account</h2>
+            <p class="text-muted small">Join us today for a premium shopping experience</p>
+        </div>
+
+        <form asp-action="Register" asp-route-returnUrl="@ViewBag.ReturnUrl" method="post" class="needs-validation">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 px-3 border-0 rounded-3 mb-4"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Username" class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing: 1px;">Username</label>
+                    <input asp-for="Username" class="form-control bg-light border-0 py-2" placeholder="username" style="border-radius: 8px;" required />
+                    <span asp-validation-for="Username" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="FullName" class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing: 1px;">Full Name</label>
+                    <input asp-for="FullName" class="form-control bg-light border-0 py-2" placeholder="Full Name" style="border-radius: 8px;" required />
+                    <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing: 1px;">Email Address</label>
+                <input asp-for="Email" type="email" class="form-control bg-light border-0 py-2" placeholder="name@example.com" style="border-radius: 8px;" required />
+                <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Password" class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing: 1px;">Password</label>
+                    <input asp-for="Password" type="password" class="form-control bg-light border-0 py-2" placeholder="••••••••" style="border-radius: 8px;" required />
+                    <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing: 1px;">Confirm Password</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control bg-light border-0 py-2" placeholder="••••••••" style="border-radius: 8px;" required />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small mt-1 d-block"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing: 1px;">Delivery Address</label>
+                <input asp-for="Address" class="form-control bg-light border-0 py-2" placeholder="Street address, City, Country" style="border-radius: 8px;" required />
+                <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="PhoneNumber" class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing: 1px;">Phone Number</label>
+                <input asp-for="PhoneNumber" class="form-control bg-light border-0 py-2" placeholder="0123456789" style="border-radius: 8px;" required />
+                <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="d-grid gap-2 mb-4">
+                <button type="submit" class="btn btn-dark py-2.5 rounded-pill fw-bold text-uppercase" style="letter-spacing: 1.5px; font-size: 0.9rem;">Register</button>
+            </div>
+        </form>
+
+        <div class="text-center">
+            <p class="text-muted small mb-0">Already have an account? <a asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" class="text-dark fw-bold text-decoration-none hover-primary">Sign In</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
