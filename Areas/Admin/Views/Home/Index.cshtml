@@ -82,8 +82,8 @@
               <td>@(order.OrderDate.HasValue ? order.OrderDate.Value.ToString("g") : "N/A")</td>
               <td class="fw-bold text-success">$@order.TotalAmount.ToString("N2")</td>
               <td>
-                <span class="badge @(order.OrderStatus == "Completed" ? "badge-success" : order.OrderStatus == "Cancelled" ? "badge-danger" : "badge-info")">
-                  @order.OrderStatus
+                <span class="badge @(order.Status == "Completed" ? "badge-success" : order.Status == "Cancelled" ? "badge-danger" : "badge-info")">
+                  @order.Status
                 </span>
               </td>
               <td>

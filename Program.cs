@@ -3,6 +3,7 @@ using FashionHubWeb.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using System.Security.Claims;
 using FashionHubWeb.Helper;
 using FashionHubWeb.Services;
 

@@ -22,7 +22,7 @@ namespace FashionHubWeb.Areas.Admin.Controllers
             ViewBag.TotalOrders = await _context.Orders.CountAsync();
             ViewBag.TotalUsers = await _context.Users.CountAsync();
             ViewBag.TotalRevenue = await _context.Orders
-                .Where(o => o.OrderStatus != "Cancelled")
+                .Where(o => o.Status != "Cancelled")
                 .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
 
             var recentOrders = await _context.Orders
