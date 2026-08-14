@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FashionHubWeb.Models;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace FashionHubWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class CouponsController : Controller
     {
         private readonly FashionHubContext _context;

@@ -1,0 +1,104 @@
+@model IEnumerable<FashionHubWeb.Models.Order>
+@{
+    ViewData["Title"] = "Admin Overview Dashboard";
+}
+
+<div class="row">
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-info">
+      <div class="inner">
+        <h3>@ViewBag.TotalProducts</h3>
+        <p>Total Products</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-box"></i>
+      </div>
+      <a href="/Admin/Products" class="small-box-footer">Manage Products <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-success">
+      <div class="inner">
+        <h3>$@ViewBag.TotalRevenue.ToString("N2")</h3>
+        <p>Total Revenue</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <a href="/Admin/Orders" class="small-box-footer">View Financials <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-warning">
+      <div class="inner">
+        <h3>@ViewBag.TotalOrders</h3>
+        <p>Total Orders</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-shopping-bag"></i>
+      </div>
+      <a href="/Admin/Orders" class="small-box-footer">Manage Orders <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-danger">
+      <div class="inner">
+        <h3>@ViewBag.TotalUsers</h3>
+        <p>Registered Users</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <a href="/Admin/Users" class="small-box-footer">User Management <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+</div>
+
+<div class="card card-outline card-primary mt-4">
+  <div class="card-header">
+    <h3 class="card-title"><i class="fas fa-clock mr-1"></i> Recent Orders</h3>
+  </div>
+  <div class="card-body p-0 table-responsive">
+    <table class="table table-striped table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Date</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (Model != null && Model.Any())
+        {
+          @foreach (var order in Model)
+          {
+            <tr>
+              <td><code>@order.OrderId</code></td>
+              <td>@(order.OrderDate.HasValue ? order.OrderDate.Value.ToString("g") : "N/A")</td>
+              <td class="fw-bold text-success">$@order.TotalAmount.ToString("N2")</td>
+              <td>
+                <span class="badge @(order.OrderStatus == "Completed" ? "badge-success" : order.OrderStatus == "Cancelled" ? "badge-danger" : "badge-info")">
+                  @order.OrderStatus
+                </span>
+              </td>
+              <td>
+                <a href="/Admin/Orders/Details/@order.OrderId" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Details</a>
+              </td>
+            </tr>
+          }
+        }
+        else
+        {
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">No recent orders found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

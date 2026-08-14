@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container py-5 my-5 text-center">
+    <div class="card border-0 shadow-sm p-5 mx-auto rounded-4" style="max-width: 550px; background-color: #ffffff;">
+        <div class="mb-4 text-danger">
+            <i class="fas fa-user-shield fa-4x mb-3"></i>
+            <h1 class="fw-bold tracking-wider text-uppercase text-dark mb-2" style="font-size: 1.8rem; letter-spacing: 2px;">Access Denied</h1>
+            <p class="text-muted">403 - Forbidden Area</p>
+        </div>
+
+        <p class="text-secondary mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+            Sorry! You do not have permission to access the <strong>Admin Dashboard</strong> or administrative features.
+            This area is restricted to authorized Administrator accounts only.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/" class="btn btn-dark px-4 py-2 rounded-pill fw-bold text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">
+                <i class="fas fa-home me-2"></i> Return to Home
+            </a>
+            <a href="/Account/Login" class="btn btn-outline-dark px-4 py-2 rounded-pill fw-bold text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">
+                <i class="fas fa-sign-in-alt me-2"></i> Switch Account
+            </a>
+        </div>
+    </div>
+</div>

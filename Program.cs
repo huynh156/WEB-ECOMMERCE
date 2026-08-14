@@ -30,11 +30,28 @@ builder.Services.AddAuthentication(options =>
 .AddCookie(options =>
 {
     options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
 })
 .AddGoogle(options =>
 {
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "YOUR_GOOGLE_CLIENT_ID";
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "YOUR_GOOGLE_CLIENT_SECRET";
+    options.Events.OnTicketReceived = async context =>
+    {
+        var email = context.Principal?.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+        if (!string.IsNullOrEmpty(email))
+        {
+            var dbContext = context.HttpContext.RequestServices.GetRequiredService<FashionHubContext>();
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user != null && context.Principal?.Identity is System.Security.Claims.ClaimsIdentity identity)
+            {
+                if (!identity.HasClaim(c => c.Type == System.Security.Claims.ClaimTypes.Role))
+                {
+                    identity.AddClaim(new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, user.Role));
+                }
+            }
+        }
+    };
 });
 
 var app = builder.Build();

@@ -69,14 +69,27 @@
                     <ul class="navbar-nav">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item me-2">
+                                    <a class="btn btn-sm btn-outline-danger text-uppercase fw-bold rounded-pill px-3 py-1 align-self-center mt-1" href="/Admin">
+                                        <i class="fas fa-user-shield me-1"></i> Admin Panel
+                                    </a>
+                                </li>
+                            }
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user-circle"></i> @User.Identity.Name
+                                    <i class="fas fa-user-circle"></i> @User.Identity.Name @(User.IsInRole("Admin") ? "(Admin)" : "")
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Orders">Order History</a></li>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2" aria-labelledby="navbarDropdown">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item fw-bold text-danger py-2" href="/Admin"><i class="fas fa-tachometer-alt me-2"></i> Admin Dashboard</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    <li><a class="dropdown-item py-2" asp-area="" asp-controller="Account" asp-action="Orders"><i class="fas fa-box-open me-2"></i> Order History</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
+                                    <li><a class="dropdown-item text-danger py-2" asp-area="" asp-controller="Account" asp-action="Logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                                 </ul>
                             </li>
                         }

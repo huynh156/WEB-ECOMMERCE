@@ -9,6 +9,54 @@ namespace FashionHubWeb
         {
             context.Database.EnsureCreated();
 
+            // Seed or update Admin user with full access
+            var adminUser = context.Users.FirstOrDefault(u => u.Username == "admin");
+            if (adminUser == null)
+            {
+                adminUser = new User
+                {
+                    UserId = "ADMIN_001",
+                    Username = "admin",
+                    Password = "123123",
+                    Email = "admin@fashionhub.com",
+                    FullName = "System Administrator",
+                    Address = "FashionHub HQ",
+                    PhoneNumber = 999888777,
+                    Role = "Admin",
+                    RandomKey = Guid.NewGuid().ToString(),
+                    IsActive = true
+                };
+                context.Users.Add(adminUser);
+            }
+            else
+            {
+                adminUser.Password = "123123";
+                adminUser.Role = "Admin";
+                adminUser.IsActive = true;
+            }
+
+            // Seed or update regular Customer user
+            var customerUser = context.Users.FirstOrDefault(u => u.Username == "user");
+            if (customerUser == null)
+            {
+                customerUser = new User
+                {
+                    UserId = "USER_001",
+                    Username = "user",
+                    Password = "123123",
+                    Email = "user@fashionhub.com",
+                    FullName = "Sample Customer",
+                    Address = "123 Fashion Street",
+                    PhoneNumber = 123456789,
+                    Role = "Customer",
+                    RandomKey = Guid.NewGuid().ToString(),
+                    IsActive = true
+                };
+                context.Users.Add(customerUser);
+            }
+
+            context.SaveChanges();
+
             // Check if old seed data exists and clear it using raw SQL to bypass EF Core tracking and FK conflicts
             if (context.Brands.Any(b => b.BrandName == "Nike" || b.BrandName == "Zara") || !context.Coupons.Any())
             {
