@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using FashionHubWeb.Models;
+using FashionHubWeb.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

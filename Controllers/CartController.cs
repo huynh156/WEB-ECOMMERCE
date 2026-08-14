@@ -1,4 +1,5 @@
 using FashionHubWeb.Models;
+using FashionHubWeb.ViewModels;
 using FashionHubWeb.Helper;
 using FashionHubWeb.Services;
 using Microsoft.AspNetCore.Authorization;

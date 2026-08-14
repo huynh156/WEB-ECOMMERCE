@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using FashionHubWeb.Models;
+using FashionHubWeb.ViewModels;
 
 namespace FashionHubWeb.Controllers
 {

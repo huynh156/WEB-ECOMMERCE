@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FashionHubWeb.Models
+namespace FashionHubWeb.ViewModels
 {
     public class CheckOutVM
     {

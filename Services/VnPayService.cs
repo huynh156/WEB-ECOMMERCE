@@ -1,5 +1,6 @@
 using FashionHubWeb.Helper;
 using FashionHubWeb.Models;
+using FashionHubWeb.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 

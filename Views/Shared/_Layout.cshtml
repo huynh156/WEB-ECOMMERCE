@@ -311,6 +311,33 @@
                 }
             });
 
+            // AJAX Wishlist Toggle
+            $(document).on('click', '.btn-wishlist', function(e) {
+                e.preventDefault();
+                var btn = $(this);
+                var productId = btn.data('product-id');
+                var icon = btn.find('i');
+
+                $.ajax({
+                    url: '/Wishlist/Toggle',
+                    type: 'POST',
+                    data: { productId: productId },
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    success: function(res) {
+                        if (res.success) {
+                            if (res.added) {
+                                icon.removeClass('far fa-heart text-dark').addClass('fas fa-heart text-danger');
+                            } else {
+                                icon.removeClass('fas fa-heart text-danger').addClass('far fa-heart text-dark');
+                            }
+                        }
+                    },
+                    error: function() {
+                        window.location.href = '/Account/Login';
+                    }
+                });
+            });
+
             $(document).on('submit', 'form[action*="/Cart/Add"]', function(e) {
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
