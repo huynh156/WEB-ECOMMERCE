@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FashionHubWeb.Models;
@@ -38,4 +38,6 @@ public partial class Product
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
+
+    public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 }

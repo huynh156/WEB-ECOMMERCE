@@ -1,74 +1,234 @@
 @model FashionHubWeb.Models.Product
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Product";
 }
 
-<h1>Edit</h1>
-
-<h4>Product</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title mb-0">Edit Product: @Model.ProductName</h3>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i>Back</a>
+    </div>
+    <div class="card-body">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ProductId" />
-            <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
-                <input asp-for="ProductName" class="form-control" />
-                <span asp-validation-for="ProductName" class="text-danger"></span>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ProductName" class="form-label fw-bold">Product Name</label>
+                            <input asp-for="ProductName" class="form-control" />
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SlugName" class="form-label fw-bold">Slug</label>
+                            <input asp-for="SlugName" class="form-control" />
+                            <span asp-validation-for="SlugName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Price" class="form-label fw-bold">Price ($)</label>
+                            <input asp-for="Price" class="form-control" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="StockQuantity" class="form-label fw-bold">Stock Quantity</label>
+                            <input asp-for="StockQuantity" class="form-control" />
+                            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Image" class="form-label fw-bold">Image URL (Legacy)</label>
+                            <input asp-for="Image" class="form-control" placeholder="Auto-set from uploads" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="CategoryId" class="form-label fw-bold">Category</label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                                <option value="">-- Select --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="BrandId" class="form-label fw-bold">Brand</label>
+                            <select asp-for="BrandId" class="form-select" asp-items="ViewBag.BrandId">
+                                <option value="">-- Select --</option>
+                            </select>
+                            <span asp-validation-for="BrandId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="CouponId" class="form-label fw-bold">Coupon</label>
+                            <select asp-for="CouponId" class="form-select" asp-items="ViewBag.CouponId">
+                                <option value="">-- No Coupon --</option>
+                            </select>
+                            <span asp-validation-for="CouponId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-bold">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Existing Images Gallery -->
+                    <label class="form-label fw-bold">Current Images</label>
+                    @if (Model.ProductImages != null && Model.ProductImages.Any())
+                    {
+                        <div id="existingImages" class="row g-2 mb-3">
+                            @foreach (var img in Model.ProductImages)
+                            {
+                                <div class="col-6 position-relative" id="img-@img.ProductImageId">
+                                    <div class="border rounded overflow-hidden" style="height: 120px;">
+                                        <img src="/images/products/@img.ImagePath" class="w-100 h-100" style="object-fit: cover;" 
+                                             onerror="this.src='https://via.placeholder.com/150?text=Error';" />
+                                    </div>
+                                    <div class="position-absolute top-0 end-0 p-1 d-flex gap-1" style="z-index: 5;">
+                                        @if (!img.IsMain)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-warning set-main-btn" data-id="@img.ProductImageId"
+                                                    title="Set as Main" style="padding: 2px 6px; font-size: 10px;">
+                                                <i class="fas fa-star"></i>
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-danger delete-img-btn" data-id="@img.ProductImageId"
+                                                title="Delete" style="padding: 2px 6px; font-size: 10px;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    @if (img.IsMain)
+                                    {
+                                        <span class="badge bg-success position-absolute bottom-0 start-0 m-1" style="font-size: 9px;">
+                                            <i class="fas fa-star me-1"></i>Main
+                                        </span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-light text-center py-3 mb-3" id="noImagesAlert">
+                            <i class="fas fa-image text-muted"></i>
+                            <p class="small text-muted mb-0">No images uploaded yet.</p>
+                        </div>
+                    }
+
+                    <!-- Upload New Images -->
+                    <label class="form-label fw-bold">Add New Images</label>
+                    <div id="dropZone" class="border border-2 border-dashed rounded-3 p-3 text-center mb-2"
+                         style="cursor: pointer; transition: all 0.3s; background: #f8f9fa;">
+                        <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-1"></i>
+                        <p class="text-muted small mb-0">Drop images or click to browse</p>
+                        <input type="file" name="NewImages" id="newImageInput" multiple accept="image/*" class="d-none" />
+                    </div>
+                    <div id="newImagePreview" class="row g-2 mb-2"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="SlugName" class="control-label"></label>
-                <input asp-for="SlugName" class="form-control" />
-                <span asp-validation-for="SlugName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StockQuantity" class="control-label"></label>
-                <input asp-for="StockQuantity" class="form-control" />
-                <span asp-validation-for="StockQuantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BrandId" class="control-label"></label>
-                <select asp-for="BrandId" class="form-control" asp-items="ViewBag.BrandId"></select>
-                <span asp-validation-for="BrandId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CouponId" class="control-label"></label>
-                <select asp-for="CouponId" class="form-control" asp-items="ViewBag.CouponId"></select>
-                <span asp-validation-for="CouponId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <hr />
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Save Changes</button>
+                <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <style>
+        #dropZone.drag-over { background: #e3f2fd !important; border-color: #2196f3 !important; }
+    </style>
+    <script>
+        $(document).ready(function() {
+            // AJAX Delete Image
+            $(document).on('click', '.delete-img-btn', function() {
+                var btn = $(this);
+                var imageId = btn.data('id');
+                if (!confirm('Delete this image?')) return;
+
+                $.ajax({
+                    url: '/Admin/Products/DeleteImage',
+                    type: 'POST',
+                    data: { imageId: imageId },
+                    success: function(res) {
+                        if (res.success) {
+                            $('#img-' + imageId).fadeOut(300, function() { $(this).remove(); });
+                        } else {
+                            alert(res.message || 'Failed to delete image.');
+                        }
+                    }
+                });
+            });
+
+            // AJAX Set Main Image
+            $(document).on('click', '.set-main-btn', function() {
+                var imageId = $(this).data('id');
+                $.ajax({
+                    url: '/Admin/Products/SetMainImage',
+                    type: 'POST',
+                    data: { imageId: imageId },
+                    success: function(res) {
+                        if (res.success) {
+                            location.reload();
+                        }
+                    }
+                });
+            });
+
+            // New Image Upload Preview
+            var selectedFiles = [];
+            var dropZone = document.getElementById('dropZone');
+            var input = document.getElementById('newImageInput');
+
+            dropZone.addEventListener('click', () => input.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                addFiles(e.dataTransfer.files);
+            });
+            input.addEventListener('change', (e) => addFiles(e.target.files));
+
+            function addFiles(files) {
+                for (var i = 0; i < files.length; i++) {
+                    if (files[i].type.startsWith('image/')) selectedFiles.push(files[i]);
+                }
+                renderPreview();
+                syncInput();
+            }
+
+            function renderPreview() {
+                var p = $('#newImagePreview').empty();
+                selectedFiles.forEach(function(f, i) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        p.append(`<div class="col-4 position-relative">
+                            <button type="button" class="btn btn-danger btn-sm remove-new" data-idx="${i}" style="position:absolute;top:2px;right:8px;z-index:5;padding:1px 5px;font-size:10px;">&times;</button>
+                            <img src="${e.target.result}" class="img-fluid rounded" style="height:80px;width:100%;object-fit:cover;" />
+                        </div>`);
+                    };
+                    reader.readAsDataURL(f);
+                });
+            }
+
+            function syncInput() {
+                var dt = new DataTransfer();
+                selectedFiles.forEach(f => dt.items.add(f));
+                input.files = dt.files;
+            }
+
+            $(document).on('click', '.remove-new', function() {
+                selectedFiles.splice($(this).data('idx'), 1);
+                renderPreview();
+                syncInput();
+            });
+        });
+    </script>
 }

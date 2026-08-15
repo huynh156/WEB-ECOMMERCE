@@ -1,0 +1,50 @@
+@model IEnumerable<FashionHubWeb.Models.Product>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold m-0">Products</h2>
+    <span class="text-muted">Showing @Model.Count() results</span>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+        <h4>No products found</h4>
+        <p>Try adjusting your filters or search query.</p>
+        <button type="button" class="btn btn-outline-primary mt-2" onclick="clearAllFilters()">Clear Filters</button>
+    </div>
+}
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        var isWishlisted = ViewBag.WishlistProductIds != null && ((List<string>)ViewBag.WishlistProductIds).Contains(item.ProductId);
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 shadow-sm border-0 product-card overflow-hidden position-relative bg-white rounded-3">
+                <img src="@item.Image" class="card-img-top object-fit-cover" alt="@item.ProductName" style="height: 300px; transition: transform 0.5s ease;" onerror="this.src='https://via.placeholder.com/300?text=No+Image';this.onerror=null;">
+                
+                <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
+                    <button class="btn btn-light shadow-sm btn-wishlist rounded-circle" data-product-id="@item.ProductId" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none;">
+                        <i class="@(isWishlisted ? "fas fa-heart text-danger" : "far fa-heart text-dark")"></i>
+                    </button>
+                </div>
+
+                <div class="card-body text-center d-flex flex-column justify-content-between p-3">
+                    <div>
+                        <p class="text-muted text-uppercase tracking-wider fw-bold mb-1" style="font-size: 0.75rem;">@item.Brand?.BrandName</p>
+                        <h5 class="card-title text-truncate fw-bold mb-2" title="@item.ProductName">@item.ProductName</h5>
+                        <p class="product-price fw-bold text-primary mb-3">$@item.Price.ToString("0.00")</p>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-outline-dark rounded-pill fw-bold py-2">View Details</a>
+                        <form asp-controller="Cart" asp-action="Add" method="post" class="d-grid">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-primary rounded-pill fw-bold py-2"><i class="fas fa-shopping-bag me-2"></i>Add to Bag</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

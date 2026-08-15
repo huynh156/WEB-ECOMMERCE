@@ -11,89 +11,79 @@
                 <h5 class="fw-bold mb-3">Categories</h5>
                 <ul class="list-unstyled">
                     <li class="mb-2">
-                        <a asp-action="Index" asp-route-category="" asp-route-brand="@ViewBag.CurrentBrand" asp-route-query="@ViewBag.SearchQuery" class="text-decoration-none @(string.IsNullOrEmpty(ViewBag.CurrentCategory) ? "fw-bold text-dark" : "text-muted")">All Categories</a>
+                        <a href="#" class="text-decoration-none category-filter @(string.IsNullOrEmpty(ViewBag.CurrentCategory) ? "fw-bold text-dark" : "text-muted")" data-category="">All Categories</a>
                     </li>
                     @foreach (var cat in ViewBag.Categories)
                     {
                         <li class="mb-2">
-                            <a asp-action="Index" asp-route-category="@cat.CategoryId" asp-route-brand="@ViewBag.CurrentBrand" asp-route-query="@ViewBag.SearchQuery" class="text-decoration-none @(ViewBag.CurrentCategory == cat.CategoryId ? "fw-bold text-dark" : "text-muted")">@cat.CategoryName</a>
+                            <a href="#" class="text-decoration-none category-filter @(ViewBag.CurrentCategory == cat.CategoryId ? "fw-bold text-dark" : "text-muted")" data-category="@cat.CategoryId">@cat.CategoryName</a>
                         </li>
                     }
                 </ul>
             </div>
             
-            <div class="card p-3 shadow-sm">
+            <div class="card p-3 shadow-sm mb-4">
                 <h5 class="fw-bold mb-3">Brands</h5>
                 <ul class="list-unstyled">
                     <li class="mb-2">
-                        <a asp-action="Index" asp-route-brand="" asp-route-category="@ViewBag.CurrentCategory" asp-route-query="@ViewBag.SearchQuery" class="text-decoration-none @(string.IsNullOrEmpty(ViewBag.CurrentBrand) ? "fw-bold text-dark" : "text-muted")">All Brands</a>
+                        <a href="#" class="text-decoration-none brand-filter @(string.IsNullOrEmpty(ViewBag.CurrentBrand) ? "fw-bold text-dark" : "text-muted")" data-brand="">All Brands</a>
                     </li>
                     @foreach (var brand in ViewBag.Brands)
                     {
                         <li class="mb-2">
-                            <a asp-action="Index" asp-route-brand="@brand.BrandId" asp-route-category="@ViewBag.CurrentCategory" asp-route-query="@ViewBag.SearchQuery" class="text-decoration-none @(ViewBag.CurrentBrand == brand.BrandId ? "fw-bold text-dark" : "text-muted")">@brand.BrandName</a>
+                            <a href="#" class="text-decoration-none brand-filter @(ViewBag.CurrentBrand == brand.BrandId ? "fw-bold text-dark" : "text-muted")" data-brand="@brand.BrandId">@brand.BrandName</a>
                         </li>
                     }
                 </ul>
             </div>
+
+            <div class="card p-3 shadow-sm mb-4">
+                <h5 class="fw-bold mb-3">Price Range</h5>
+                <div class="d-flex align-items-center mb-2">
+                    <input type="number" id="minPrice" class="form-control form-control-sm me-2 price-filter" placeholder="Min" value="@ViewBag.CurrentMinPrice" min="@ViewBag.PriceRangeMin" max="@ViewBag.PriceRangeMax" />
+                    <span>-</span>
+                    <input type="number" id="maxPrice" class="form-control form-control-sm ms-2 price-filter" placeholder="Max" value="@ViewBag.CurrentMaxPrice" min="@ViewBag.PriceRangeMin" max="@ViewBag.PriceRangeMax" />
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-outline-danger w-100 fw-bold shadow-sm" onclick="clearAllFilters()">Clear All Filters</button>
         </div>
 
         <!-- Product Grid -->
         <div class="col-md-9">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold m-0">Products</h2>
-                <span class="text-muted">Showing @Model.Count() results</span>
+            <div class="d-flex justify-content-end align-items-center mb-3">
+                <div class="d-flex align-items-center">
+                    <label for="sortSelect" class="me-2 fw-bold text-muted mb-0">Sort By:</label>
+                    <select id="sortSelect" class="form-select form-select-sm w-auto shadow-sm">
+                        <option value="" selected="@(string.IsNullOrEmpty(ViewBag.CurrentSort) ? "selected" : null)">Default (Newest)</option>
+                        <option value="price_asc" selected="@(ViewBag.CurrentSort == "price_asc" ? "selected" : null)">Price: Low to High</option>
+                        <option value="price_desc" selected="@(ViewBag.CurrentSort == "price_desc" ? "selected" : null)">Price: High to Low</option>
+                        <option value="name_asc" selected="@(ViewBag.CurrentSort == "name_asc" ? "selected" : null)">Name: A to Z</option>
+                        <option value="name_desc" selected="@(ViewBag.CurrentSort == "name_desc" ? "selected" : null)">Name: Z to A</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
             </div>
 
-            @if (!Model.Any())
-            {
-                <div class="alert alert-info text-center py-5">
-                    <i class="fas fa-search fa-3x mb-3 text-muted"></i>
-                    <h4>No products found</h4>
-                    <p>Try adjusting your filters or search query.</p>
-                    <a asp-action="Index" class="btn btn-outline-primary mt-2">Clear Filters</a>
-                </div>
-            }
-
-            <div class="row">
-                @foreach (var item in Model)
-                {
-                    var isWishlisted = ViewBag.WishlistProductIds != null && ((List<string>)ViewBag.WishlistProductIds).Contains(item.ProductId);
-                    <div class="col-md-4 col-sm-6 mb-4">
-                        <div class="card h-100 shadow-sm border-0 product-card overflow-hidden position-relative bg-white rounded-3">
-                            <img src="@item.Image" class="card-img-top object-fit-cover" alt="@item.ProductName" style="height: 300px; transition: transform 0.5s ease;" onerror="this.src='https://via.placeholder.com/300?text=No+Image';this.onerror=null;">
-                            
-                            <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
-                                <button class="btn btn-light shadow-sm btn-wishlist rounded-circle" data-product-id="@item.ProductId" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none;">
-                                    <i class="@(isWishlisted ? "fas fa-heart text-danger" : "far fa-heart text-dark")"></i>
-                                </button>
-                            </div>
-
-                            <div class="card-body text-center d-flex flex-column justify-content-between p-3">
-                                <div>
-                                    <p class="text-muted text-uppercase tracking-wider fw-bold mb-1" style="font-size: 0.75rem;">@item.Brand?.BrandName</p>
-                                    <h5 class="card-title text-truncate fw-bold mb-2" title="@item.ProductName">@item.ProductName</h5>
-                                    <p class="product-price fw-bold text-primary mb-3">$@item.Price.ToString("0.00")</p>
-                                </div>
-                                <div class="d-grid gap-2">
-                                    <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-outline-dark rounded-pill fw-bold py-2">View Details</a>
-                                    <form asp-controller="Cart" asp-action="Add" method="post" class="d-grid">
-                                        <input type="hidden" name="productId" value="@item.ProductId" />
-                                        <input type="hidden" name="quantity" value="1" />
-                                        <button type="submit" class="btn btn-primary rounded-pill fw-bold py-2"><i class="fas fa-shopping-bag me-2"></i>Add to Bag</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
+            <div id="productGrid">
+                <partial name="_ProductGrid" model="Model" />
             </div>
         </div>
     </div>
 </div>
 
+<input type="hidden" id="currentQuery" value="@ViewBag.SearchQuery" />
+<input type="hidden" id="currentCategory" value="@ViewBag.CurrentCategory" />
+<input type="hidden" id="currentBrand" value="@ViewBag.CurrentBrand" />
+
 @section Scripts {
     <script>
+        // Existing wishlist logic
         $(document).on('click', '.btn-wishlist', function(e) {
             e.preventDefault();
             var btn = $(this);
@@ -121,5 +111,101 @@
                 }
             });
         });
+
+        // AJAX Filtering Logic
+        let filterTimeout;
+
+        function loadProducts() {
+            var query = $('#currentQuery').val();
+            var category = $('#currentCategory').val();
+            var brand = $('#currentBrand').val();
+            var sort = $('#sortSelect').val();
+            var minPrice = $('#minPrice').val();
+            var maxPrice = $('#maxPrice').val();
+
+            var data = {};
+            if (query) data.query = query;
+            if (category) data.category = category;
+            if (brand) data.brand = brand;
+            if (sort) data.sort = sort;
+            if (minPrice) data.minPrice = minPrice;
+            if (maxPrice) data.maxPrice = maxPrice;
+
+            $('#productGrid').hide();
+            $('#loadingSpinner').show();
+
+            $.ajax({
+                url: '@Url.Action("Index", "Shop")',
+                type: 'GET',
+                data: data,
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                success: function (result) {
+                    $('#productGrid').html(result);
+                    $('#loadingSpinner').hide();
+                    $('#productGrid').show();
+
+                    // Update URL
+                    var url = new URL(window.location.href);
+                    url.search = new URLSearchParams(data).toString();
+                    window.history.pushState({}, '', url);
+
+                    updateActiveLinks();
+                },
+                error: function () {
+                    $('#loadingSpinner').hide();
+                    $('#productGrid').show();
+                    alert("Error loading products.");
+                }
+            });
+        }
+
+        function updateActiveLinks() {
+            var currentCat = $('#currentCategory').val();
+            $('.category-filter').removeClass('fw-bold text-dark').addClass('text-muted');
+            if(currentCat) {
+                $('.category-filter[data-category="' + currentCat + '"]').removeClass('text-muted').addClass('fw-bold text-dark');
+            } else {
+                $('.category-filter[data-category=""]').removeClass('text-muted').addClass('fw-bold text-dark');
+            }
+
+            var currentBrand = $('#currentBrand').val();
+            $('.brand-filter').removeClass('fw-bold text-dark').addClass('text-muted');
+            if(currentBrand) {
+                $('.brand-filter[data-brand="' + currentBrand + '"]').removeClass('text-muted').addClass('fw-bold text-dark');
+            } else {
+                $('.brand-filter[data-brand=""]').removeClass('text-muted').addClass('fw-bold text-dark');
+            }
+        }
+
+        $(document).on('click', '.category-filter', function(e) {
+            e.preventDefault();
+            $('#currentCategory').val($(this).data('category'));
+            loadProducts();
+        });
+
+        $(document).on('click', '.brand-filter', function(e) {
+            e.preventDefault();
+            $('#currentBrand').val($(this).data('brand'));
+            loadProducts();
+        });
+
+        $(document).on('change', '#sortSelect', function() {
+            loadProducts();
+        });
+
+        $(document).on('input', '.price-filter', function() {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(loadProducts, 500);
+        });
+
+        window.clearAllFilters = function() {
+            $('#currentQuery').val('');
+            $('#currentCategory').val('');
+            $('#currentBrand').val('');
+            $('#sortSelect').val('');
+            $('#minPrice').val('');
+            $('#maxPrice').val('');
+            loadProducts();
+        }
     </script>
 }

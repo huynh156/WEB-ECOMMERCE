@@ -230,6 +230,92 @@ namespace FashionHubWeb.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await GetOrCreateUserFromClaimsAsync(User);
+            var model = new ProfileVM
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                FullName = user.FullName,
+                Email = user.Email,
+                Address = user.Address,
+                PhoneNumber = user.PhoneNumber.ToString(),
+                Role = user.Role
+            };
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(ProfileVM model)
+        {
+            // Remove password validation if not changing password
+            if (string.IsNullOrEmpty(model.NewPassword))
+            {
+                ModelState.Remove("CurrentPassword");
+                ModelState.Remove("NewPassword");
+                ModelState.Remove("ConfirmNewPassword");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _context.Users.FindAsync(model.UserId);
+            if (user == null) return NotFound();
+
+            // Check if email changed and is unique
+            if (user.Email != model.Email)
+            {
+                var emailExists = await _context.Users.AnyAsync(u => u.Email == model.Email && u.UserId != user.UserId);
+                if (emailExists)
+                {
+                    ModelState.AddModelError("Email", "Email is already registered by another user.");
+                    return View(model);
+                }
+            }
+
+            // Handle password change
+            if (!string.IsNullOrEmpty(model.NewPassword))
+            {
+                if (user.Password != model.CurrentPassword)
+                {
+                    ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
+                    return View(model);
+                }
+                user.Password = model.NewPassword;
+            }
+
+            // Update fields
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.Address = model.Address;
+            int.TryParse(model.PhoneNumber, out int parsedPhone);
+            user.PhoneNumber = parsedPhone;
+
+            await _context.SaveChangesAsync();
+
+            // Re-sign in to update claims
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId),
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            TempData["ProfileSuccess"] = "Your profile has been updated successfully!";
+            return RedirectToAction("Profile");
+        }
+
         [HttpGet]
         public async Task<IActionResult> Logout()
         {

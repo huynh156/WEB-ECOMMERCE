@@ -1,75 +1,190 @@
 @model FashionHubWeb.Models.Product
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Product";
 }
 
-<h1>Create</h1>
-
-<h4>Product</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Create New Product</h3>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ProductId" class="control-label"></label>
-                <input asp-for="ProductId" class="form-control" />
-                <span asp-validation-for="ProductId" class="text-danger"></span>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ProductId" class="form-label fw-bold">Product ID</label>
+                            <input asp-for="ProductId" class="form-control" placeholder="e.g. PRD001" />
+                            <span asp-validation-for="ProductId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ProductName" class="form-label fw-bold">Product Name</label>
+                            <input asp-for="ProductName" class="form-control" placeholder="Enter product name" />
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SlugName" class="form-label fw-bold">Slug</label>
+                            <input asp-for="SlugName" class="form-control" placeholder="product-slug-name" />
+                            <span asp-validation-for="SlugName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label asp-for="Price" class="form-label fw-bold">Price ($)</label>
+                            <input asp-for="Price" class="form-control" placeholder="0.00" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label asp-for="StockQuantity" class="form-label fw-bold">Stock</label>
+                            <input asp-for="StockQuantity" class="form-control" placeholder="0" />
+                            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="CategoryId" class="form-label fw-bold">Category</label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                                <option value="">-- Select Category --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="BrandId" class="form-label fw-bold">Brand</label>
+                            <select asp-for="BrandId" class="form-select" asp-items="ViewBag.BrandId">
+                                <option value="">-- Select Brand --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="CouponId" class="form-label fw-bold">Coupon</label>
+                            <select asp-for="CouponId" class="form-select" asp-items="ViewBag.CouponId">
+                                <option value="">-- No Coupon --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-bold">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Product description..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Product Images</label>
+                    <div id="dropZone" class="border border-2 border-dashed rounded-3 p-4 text-center mb-3" 
+                         style="min-height: 200px; cursor: pointer; transition: all 0.3s ease; background: #f8f9fa;">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                        <p class="text-muted mb-1">Drag & Drop images here</p>
+                        <p class="text-muted small">or click to browse</p>
+                        <input type="file" name="Images" id="imageInput" multiple accept="image/*" class="d-none" />
+                    </div>
+                    <div id="imagePreview" class="row g-2"></div>
+                    <small class="text-muted"><i class="fas fa-info-circle me-1"></i>First image will be set as main. Max 10 images.</small>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
-                <input asp-for="ProductName" class="form-control" />
-                <span asp-validation-for="ProductName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SlugName" class="control-label"></label>
-                <input asp-for="SlugName" class="form-control" />
-                <span asp-validation-for="SlugName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StockQuantity" class="control-label"></label>
-                <input asp-for="StockQuantity" class="form-control" />
-                <span asp-validation-for="StockQuantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="BrandId" class="control-label"></label>
-                <select asp-for="BrandId" class ="form-control" asp-items="ViewBag.BrandId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="CouponId" class="control-label"></label>
-                <select asp-for="CouponId" class ="form-control" asp-items="ViewBag.CouponId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <hr />
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Create Product</button>
+                <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <style>
+        #dropZone.drag-over {
+            background: #e3f2fd !important;
+            border-color: #2196f3 !important;
+        }
+        .preview-item {
+            position: relative;
+        }
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            background: rgba(220,53,69,0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        .preview-item .main-badge {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            font-size: 10px;
+            z-index: 5;
+        }
+    </style>
+    <script>
+        $(document).ready(function() {
+            var selectedFiles = [];
+            var dropZone = document.getElementById('dropZone');
+            var imageInput = document.getElementById('imageInput');
+
+            dropZone.addEventListener('click', () => imageInput.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            imageInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+            function handleFiles(files) {
+                for (var i = 0; i < files.length && selectedFiles.length < 10; i++) {
+                    if (files[i].type.startsWith('image/')) {
+                        selectedFiles.push(files[i]);
+                    }
+                }
+                updatePreview();
+                updateFileInput();
+            }
+
+            function updatePreview() {
+                var preview = $('#imagePreview');
+                preview.empty();
+                selectedFiles.forEach(function(file, index) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var html = `
+                            <div class="col-4 preview-item">
+                                <button type="button" class="remove-btn" data-index="${index}">&times;</button>
+                                ${index === 0 ? '<span class="badge bg-success main-badge">Main</span>' : ''}
+                                <img src="${e.target.result}" class="img-fluid rounded" style="height: 90px; width: 100%; object-fit: cover;" />
+                            </div>`;
+                        preview.append(html);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function updateFileInput() {
+                var dt = new DataTransfer();
+                selectedFiles.forEach(f => dt.items.add(f));
+                imageInput.files = dt.files;
+            }
+
+            $(document).on('click', '.remove-btn', function() {
+                var idx = $(this).data('index');
+                selectedFiles.splice(idx, 1);
+                updatePreview();
+                updateFileInput();
+            });
+        });
+    </script>
 }

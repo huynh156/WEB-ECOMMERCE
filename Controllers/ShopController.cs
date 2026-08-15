@@ -35,7 +35,7 @@ namespace FashionHubWeb.Controllers
             return wishlistIds;
         }
 
-        public async Task<IActionResult> Index(string query, string category, string brand)
+        public async Task<IActionResult> Index(string query, string category, string brand, string sort, decimal? minPrice, decimal? maxPrice)
         {
             var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).AsQueryable();
 
@@ -57,14 +57,42 @@ namespace FashionHubWeb.Controllers
                 products = products.Where(p => p.BrandId == brand);
             }
 
+            if (minPrice.HasValue)
+                products = products.Where(p => p.Price >= minPrice.Value);
+            if (maxPrice.HasValue)
+                products = products.Where(p => p.Price <= maxPrice.Value);
+
+            products = sort switch
+            {
+                "price_asc" => products.OrderBy(p => p.Price),
+                "price_desc" => products.OrderByDescending(p => p.Price),
+                "name_asc" => products.OrderBy(p => p.ProductName),
+                "name_desc" => products.OrderByDescending(p => p.ProductName),
+                _ => products.OrderByDescending(p => p.ProductId)
+            };
+
             ViewBag.Categories = await _context.Categories.ToListAsync();
             ViewBag.Brands = await _context.Brands.ToListAsync();
             ViewBag.CurrentCategory = category;
             ViewBag.CurrentBrand = brand;
             ViewBag.SearchQuery = query;
+            ViewBag.CurrentSort = sort;
+            ViewBag.CurrentMinPrice = minPrice;
+            ViewBag.CurrentMaxPrice = maxPrice;
             ViewBag.WishlistProductIds = await GetWishlistProductIdsAsync();
 
-            return View(await products.ToListAsync());
+            var allPrices = await _context.Products.Select(p => p.Price).ToListAsync();
+            ViewBag.PriceRangeMin = allPrices.Any() ? allPrices.Min() : 0;
+            ViewBag.PriceRangeMax = allPrices.Any() ? allPrices.Max() : 10000;
+
+            var productList = await products.ToListAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_ProductGrid", productList);
+            }
+
+            return View(productList);
         }
 
         public async Task<IActionResult> Details(string id)
@@ -74,6 +102,7 @@ namespace FashionHubWeb.Controllers
             var product = await _context.Products
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
+                .Include(p => p.ProductImages.OrderBy(pi => pi.SortOrder))
                 .FirstOrDefaultAsync(m => m.ProductId == id);
 
             if (product == null) return NotFound();

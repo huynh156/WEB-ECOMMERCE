@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +50,8 @@ public partial class FashionHubContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Wishlist> Wishlists { get; set; }
+
+    public virtual DbSet<ProductImage> ProductImages { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -512,6 +514,33 @@ public partial class FashionHubContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Wishlist__UserID__70DDC3D8");
+        });
+
+        modelBuilder.Entity<ProductImage>(entity =>
+        {
+            entity.HasKey(e => e.ProductImageId);
+
+            entity.ToTable("ProductImages");
+
+            entity.Property(e => e.ProductImageId)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("ProductImageID");
+            entity.Property(e => e.ProductId)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("ProductID");
+            entity.Property(e => e.ImagePath)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.IsMain)
+                .HasDefaultValue(false);
+            entity.Property(e => e.SortOrder)
+                .HasDefaultValue(0);
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductImages)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);
