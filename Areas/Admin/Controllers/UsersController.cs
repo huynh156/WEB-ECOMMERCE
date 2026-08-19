@@ -41,13 +41,15 @@ namespace FashionHubWeb.Areas.Admin.Controllers
                                          u.PhoneNumber.ToString().Contains(term));
             }
 
-            // Order by most recent order date descending, then by username
-            var top50Users = await query
-                .OrderByDescending(u => u.Orders.Max(o => (DateTime?)o.OrderDate) ?? DateTime.MinValue)
+            var allMatchingUsers = await query.ToListAsync();
+
+            // Order in memory by most recent order date descending, then order count, then username
+            var top50Users = allMatchingUsers
+                .OrderByDescending(u => u.Orders.Any() ? (u.Orders.Max(o => o.OrderDate) ?? DateTime.MinValue) : DateTime.MinValue)
                 .ThenByDescending(u => u.Orders.Count)
                 .ThenBy(u => u.Username)
                 .Take(50)
-                .ToListAsync();
+                .ToList();
 
             int totalUsers = top50Users.Count;
             int totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
