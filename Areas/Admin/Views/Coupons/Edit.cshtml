@@ -1,69 +1,79 @@
 @model FashionHubWeb.Models.Coupon
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Coupon: " + Model.CouponCode;
 }
 
-<h1>Edit</h1>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-outline card-warning shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-edit text-warning mr-2"></i> Edit Coupon
+                </h3>
+            </div>
+            <form asp-action="Edit" method="post">
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+                    <input type="hidden" asp-for="CouponId" />
 
-<h4>Coupon</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CouponId" />
-            <div class="form-group">
-                <label asp-for="CouponCode" class="control-label"></label>
-                <input asp-for="CouponCode" class="form-control" />
-                <span asp-validation-for="CouponCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DiscountAmount" class="control-label"></label>
-                <input asp-for="DiscountAmount" class="form-control" />
-                <span asp-validation-for="DiscountAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ExpiryDate" class="control-label"></label>
-                <input asp-for="ExpiryDate" class="form-control" />
-                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IsActive" class="control-label"></label>
-                <input asp-for="IsActive" class="form-control" />
-                <span asp-validation-for="IsActive" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DiscountType" class="control-label"></label>
-                <input asp-for="DiscountType" class="form-control" />
-                <span asp-validation-for="DiscountType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaxDiscount" class="control-label"></label>
-                <input asp-for="MaxDiscount" class="form-control" />
-                <span asp-validation-for="MaxDiscount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MinOrderValue" class="control-label"></label>
-                <input asp-for="MinOrderValue" class="form-control" />
-                <span asp-validation-for="MinOrderValue" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CouponCode" class="font-weight-bold">Coupon Code</label>
+                            <input asp-for="CouponCode" class="form-control text-uppercase font-weight-bold" required />
+                            <span asp-validation-for="CouponCode" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DiscountType" class="font-weight-bold">Discount Type</label>
+                            <select asp-for="DiscountType" class="form-control">
+                                <option value="Fixed">Fixed Amount ($)</option>
+                                <option value="Percentage">Percentage (%)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DiscountAmount" class="font-weight-bold">Discount Value</label>
+                            <input asp-for="DiscountAmount" class="form-control" required />
+                            <span asp-validation-for="DiscountAmount" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Quantity" class="font-weight-bold">Quantity (Remaining Usage)</label>
+                            <input asp-for="Quantity" class="form-control" required />
+                            <span asp-validation-for="Quantity" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="MinOrderValue" class="font-weight-bold">Minimum Order Amount ($)</label>
+                            <input asp-for="MinOrderValue" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ExpiryDate" class="font-weight-bold">Expiry Date</label>
+                            <input asp-for="ExpiryDate" type="date" class="form-control" value="@Model.ExpiryDate.ToString("yyyy-MM-dd")" required />
+                            <span asp-validation-for="ExpiryDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-0 mt-2">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" asp-for="IsActive" id="couponActiveSwitch">
+                            <label class="custom-control-label font-weight-bold" for="couponActiveSwitch">Active Coupon</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                    <button type="submit" class="btn btn-warning font-weight-bold text-white px-4">
+                        <i class="fas fa-save mr-1"></i> Update Coupon
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FashionHubWeb.Models;
-
 using Microsoft.AspNetCore.Authorization;
 
 namespace FashionHubWeb.Areas.Admin.Controllers
@@ -25,23 +24,18 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Brands
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Brands.ToListAsync());
+            return View(await _context.Brands.Include(b => b.Products).ToListAsync());
         }
 
         // GET: Brands/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var brand = await _context.Brands
+                .Include(b => b.Products)
                 .FirstOrDefaultAsync(m => m.BrandId == id);
-            if (brand == null)
-            {
-                return NotFound();
-            }
+            if (brand == null) return NotFound();
 
             return View(brand);
         }
@@ -53,12 +47,13 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         }
 
         // POST: Brands/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BrandId,BrandName,Description")] Brand brand)
         {
+            if (string.IsNullOrWhiteSpace(brand.BrandId))
+                brand.BrandId = "BRD_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+
             if (ModelState.IsValid)
             {
                 _context.Add(brand);
@@ -71,30 +66,19 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Brands/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var brand = await _context.Brands.FindAsync(id);
-            if (brand == null)
-            {
-                return NotFound();
-            }
+            if (brand == null) return NotFound();
             return View(brand);
         }
 
         // POST: Brands/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("BrandId,BrandName,Description")] Brand brand)
         {
-            if (id != brand.BrandId)
-            {
-                return NotFound();
-            }
+            if (id != brand.BrandId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -106,13 +90,9 @@ namespace FashionHubWeb.Areas.Admin.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!BrandExists(brand.BrandId))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -122,17 +102,12 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Brands/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var brand = await _context.Brands
+                .Include(b => b.Products)
                 .FirstOrDefaultAsync(m => m.BrandId == id);
-            if (brand == null)
-            {
-                return NotFound();
-            }
+            if (brand == null) return NotFound();
 
             return View(brand);
         }
@@ -146,9 +121,9 @@ namespace FashionHubWeb.Areas.Admin.Controllers
             if (brand != null)
             {
                 _context.Brands.Remove(brand);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -158,4 +133,3 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         }
     }
 }
-

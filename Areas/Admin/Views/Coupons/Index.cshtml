@@ -1,77 +1,115 @@
 @model IEnumerable<FashionHubWeb.Models.Coupon>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Coupons";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CouponCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DiscountAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ExpiryDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DiscountType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MaxDiscount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MinOrderValue)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CouponCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DiscountAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpiryDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DiscountType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaxDiscount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MinOrderValue)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.CouponId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CouponId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CouponId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card card-outline card-primary shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+        <h3 class="card-title font-weight-bold mb-0">
+            <i class="fas fa-ticket-alt text-primary mr-2"></i> Promotional Coupons (@Model.Count())
+        </h3>
+        <div class="card-tools">
+            <a asp-action="Create" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus mr-1"></i> Create Coupon
+            </a>
+        </div>
+    </div>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-hover table-striped align-middle text-nowrap mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th style="width: 80px;">#</th>
+                    <th>Coupon Code</th>
+                    <th>Discount</th>
+                    <th>Type</th>
+                    <th>Min Order</th>
+                    <th>Remaining</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th class="text-right" style="width: 140px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="9" class="text-center py-5 text-muted">
+                            <i class="fas fa-ticket-alt fa-3x mb-2 text-secondary"></i>
+                            <p class="mb-0">No coupons found.</p>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    int index = 1;
+                    foreach (var item in Model)
+                    {
+                        var isExpired = item.ExpiryDate < DateOnly.FromDateTime(DateTime.Today);
+                        <tr>
+                            <td>@(index++)</td>
+                            <td>
+                                <span class="badge badge-warning text-dark font-weight-bold px-2 py-1 font-monospace font-size-sm">
+                                    <i class="fas fa-cut mr-1"></i> @item.CouponCode
+                                </span>
+                            </td>
+                            <td class="font-weight-bold text-success">
+                                @if (item.DiscountType == "Percentage")
+                                {
+                                    <span>@item.DiscountAmount% off</span>
+                                }
+                                else
+                                {
+                                    <span>$@item.DiscountAmount.ToString("0.00")</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge badge-light border">@item.DiscountType</span>
+                            </td>
+                            <td>
+                                @(item.MinOrderValue.HasValue ? $"${item.MinOrderValue.Value:0.00}" : "No minimum")
+                            </td>
+                            <td>
+                                <span class="badge badge-secondary font-weight-normal">@item.Quantity left</span>
+                            </td>
+                            <td>
+                                <span class="@(isExpired ? "text-danger font-weight-bold" : "text-dark")">
+                                    @item.ExpiryDate.ToString("dd/MM/yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                @if (item.IsActive == true && !isExpired && item.Quantity > 0)
+                                {
+                                    <span class="badge badge-success px-2 py-1">Active</span>
+                                }
+                                else if (isExpired)
+                                {
+                                    <span class="badge badge-danger px-2 py-1">Expired</span>
+                                }
+                                else if (item.Quantity <= 0)
+                                {
+                                    <span class="badge badge-secondary px-2 py-1">Depleted</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary px-2 py-1">Disabled</span>
+                                }
+                            </td>
+                            <td class="text-right">
+                                <a asp-action="Details" asp-route-id="@item.CouponId" class="btn btn-info btn-xs" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.CouponId" class="btn btn-warning btn-xs text-white" title="Edit Coupon">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.CouponId" class="btn btn-danger btn-xs" title="Delete Coupon">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

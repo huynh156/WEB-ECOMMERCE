@@ -1,72 +1,122 @@
 @model FashionHubWeb.Models.Product
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Product Details: " + Model.ProductName;
+    var productImages = Model.ProductImages?.OrderBy(pi => pi.SortOrder).ToList() ?? new List<FashionHubWeb.Models.ProductImage>();
 }
 
-<h1>Details</h1>
+<div class="row">
+    <div class="col-md-5 mb-4">
+        <!-- Gallery Card -->
+        <div class="card card-outline card-primary shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold mb-0">
+                    <i class="fas fa-images text-primary mr-2"></i> Product Gallery
+                </h3>
+            </div>
+            <div class="card-body">
+                @if (productImages.Any())
+                {
+                    <div class="text-center mb-3">
+                        <img id="mainAdminProductImg" src="/images/products/@productImages.First().ImagePath" 
+                             class="img-fluid rounded border shadow-sm" style="max-height: 350px; width: 100%; object-fit: cover;" 
+                             onerror="this.src='https://via.placeholder.com/350?text=No+Image';" />
+                    </div>
+                    @if (productImages.Count > 1)
+                    {
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            @foreach (var img in productImages)
+                            {
+                                <img src="/images/products/@img.ImagePath" class="rounded border admin-thumb-btn mr-1 mb-1" 
+                                     style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;" 
+                                     onclick="document.getElementById('mainAdminProductImg').src = this.src;" />
+                            }
+                        </div>
+                    }
+                }
+                else if (!string.IsNullOrEmpty(Model.Image))
+                {
+                    <div class="text-center">
+                        <img src="@Model.Image" class="img-fluid rounded border shadow-sm" style="max-height: 350px; width: 100%; object-fit: cover;" 
+                             onerror="this.src='https://via.placeholder.com/350?text=No+Image';" />
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-image fa-3x text-secondary mb-2"></i>
+                        <p class="mb-0">No images uploaded.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SlugName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SlugName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StockQuantity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StockQuantity)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Image)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand.BrandId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.CategoryId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Coupon)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Coupon.CouponId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ProductId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="col-md-7">
+        <!-- Details Card -->
+        <div class="card card-outline card-secondary shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title font-weight-bold mb-0">
+                    <i class="fas fa-info-circle text-secondary mr-2"></i> Specifications & Information
+                </h3>
+            </div>
+            <div class="card-body">
+                <h2 class="font-weight-bold text-dark mb-2">@Model.ProductName</h2>
+                <div class="mb-3">
+                    <span class="badge badge-primary px-3 py-1 font-size-md mr-2">$@Model.Price.ToString("0.00")</span>
+                    @if (Model.StockQuantity > 10)
+                    {
+                        <span class="badge badge-success px-2 py-1">@Model.StockQuantity In Stock</span>
+                    }
+                    else if (Model.StockQuantity > 0)
+                    {
+                        <span class="badge badge-warning px-2 py-1">Low Stock (@Model.StockQuantity)</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger px-2 py-1">Out of Stock</span>
+                    }
+                </div>
+
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted font-weight-bold">Product ID / SKU:</span>
+                        <span class="font-monospace text-dark font-weight-bold">@Model.ProductId</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted font-weight-bold">Slug Name:</span>
+                        <span class="text-dark">@Model.SlugName</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted font-weight-bold">Category:</span>
+                        <span class="badge badge-light border">@(Model.Category?.CategoryName ?? "-")</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted font-weight-bold">Brand:</span>
+                        <span class="badge badge-light border">@(Model.Brand?.BrandName ?? "-")</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted font-weight-bold">Coupon Attached:</span>
+                        <span class="badge badge-info">@(Model.Coupon?.CouponCode ?? "None")</span>
+                    </li>
+                </ul>
+
+                <div>
+                    <h6 class="font-weight-bold text-muted text-uppercase small">Description</h6>
+                    <div class="p-3 bg-light rounded border text-muted">
+                        @(string.IsNullOrEmpty(Model.Description) ? "No description provided." : Model.Description)
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Catalog
+                </a>
+                <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-warning text-white font-weight-bold px-4">
+                    <i class="fas fa-pencil-alt mr-1"></i> Edit Product
+                </a>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,69 +1,55 @@
 @model FashionHubWeb.Models.Coupon
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Coupon: " + Model.CouponCode;
 }
 
-<h1>Delete</h1>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card card-outline card-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h3 class="card-title font-weight-bold mb-0">
+                    <i class="fas fa-exclamation-triangle mr-2"></i> Confirm Delete Coupon
+                </h3>
+            </div>
+            <div class="card-body">
+                <p class="text-danger font-weight-bold mb-3">
+                    Are you sure you want to permanently delete this promotional coupon?
+                </p>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Coupon</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CouponCode)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CouponCode)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DiscountAmount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DiscountAmount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ExpiryDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ExpiryDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Quantity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Quantity)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DiscountType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DiscountType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxDiscount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaxDiscount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MinOrderValue)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MinOrderValue)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="CouponId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+                <div class="border rounded p-3 bg-light mb-3">
+                    <div class="row mb-2">
+                        <div class="col-sm-4 font-weight-bold text-muted">Coupon Code:</div>
+                        <div class="col-sm-8 font-weight-bold font-monospace text-dark">@Model.CouponCode</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 font-weight-bold text-muted">Discount:</div>
+                        <div class="col-sm-8 font-weight-bold text-success">
+                            @(Model.DiscountType == "Percentage" ? $"{Model.DiscountAmount}%" : $"${Model.DiscountAmount:0.00}")
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 font-weight-bold text-muted">Expiry Date:</div>
+                        <div class="col-sm-8">@Model.ExpiryDate.ToString("dd/MM/yyyy")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 font-weight-bold text-muted">Remaining:</div>
+                        <div class="col-sm-8">@Model.Quantity units</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Cancel
+                </a>
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="CouponId" />
+                    <button type="submit" class="btn btn-danger font-weight-bold px-4">
+                        <i class="fas fa-trash-alt mr-1"></i> Delete Coupon
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

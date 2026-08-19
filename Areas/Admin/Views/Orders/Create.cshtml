@@ -1,104 +1,97 @@
 @model FashionHubWeb.Models.Order
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Manual Order";
 }
 
-<h1>Create</h1>
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card card-outline card-primary shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-cart-plus text-primary mr-2"></i> Create Manual Order
+                </h3>
+            </div>
+            
+            <form asp-action="Create" method="post">
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
 
-<h4>Order</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="OrderId" class="control-label"></label>
-                <input asp-for="OrderId" class="form-control" />
-                <span asp-validation-for="OrderId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="OrderDate" class="control-label"></label>
-                <input asp-for="OrderDate" class="form-control" />
-                <span asp-validation-for="OrderDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CouponId" class="control-label"></label>
-                <select asp-for="CouponId" class ="form-control" asp-items="ViewBag.CouponId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReceivedDate" class="control-label"></label>
-                <input asp-for="ReceivedDate" class="form-control" />
-                <span asp-validation-for="ReceivedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ExpectedDeliveryDate" class="control-label"></label>
-                <input asp-for="ExpectedDeliveryDate" class="form-control" />
-                <span asp-validation-for="ExpectedDeliveryDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PaymentMethod" class="control-label"></label>
-                <input asp-for="PaymentMethod" class="form-control" />
-                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StatusId" class="control-label"></label>
-                <select asp-for="StatusId" class ="form-control" asp-items="ViewBag.StatusId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ShipperId" class="control-label"></label>
-                <select asp-for="ShipperId" class ="form-control" asp-items="ViewBag.ShipperId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ShippingMethod" class="control-label"></label>
-                <input asp-for="ShippingMethod" class="form-control" />
-                <span asp-validation-for="ShippingMethod" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notes" class="control-label"></label>
-                <input asp-for="Notes" class="form-control" />
-                <span asp-validation-for="Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="FullName" class="font-weight-bold">Customer Name</label>
+                            <input asp-for="FullName" class="form-control" placeholder="Customer full name" required />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="PhoneNumber" class="font-weight-bold">Phone Number</label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="0123456789" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="UserId" class="font-weight-bold">Customer Account (Optional)</label>
+                            <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId">
+                                <option value="">-- Guest Customer --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="font-weight-bold">Delivery Address</label>
+                        <input asp-for="Address" class="form-control" placeholder="Street, City, Country" required />
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="TotalAmount" class="font-weight-bold">Total Amount ($)</label>
+                            <input asp-for="TotalAmount" class="form-control" placeholder="0.00" required />
+                            <span asp-validation-for="TotalAmount" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Status" class="font-weight-bold">Initial Status</label>
+                            <select asp-for="Status" class="form-control" asp-items="ViewBag.StatusList"></select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="PaymentMethod" class="font-weight-bold">Payment Method</label>
+                            <input asp-for="PaymentMethod" class="form-control" value="COD" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ShippingMethod" class="font-weight-bold">Shipping Method</label>
+                            <input asp-for="ShippingMethod" class="form-control" value="Standard Shipping" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ShipperId" class="font-weight-bold">Shipping Partner</label>
+                            <select asp-for="ShipperId" class="form-control" asp-items="ViewBag.ShipperId">
+                                <option value="">-- Select Shipper --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="CouponId" class="font-weight-bold">Coupon</label>
+                            <select asp-for="CouponId" class="form-control" asp-items="ViewBag.CouponId">
+                                <option value="">-- No Coupon --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="font-weight-bold">Notes</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Order notes or instructions..."></textarea>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left mr-1"></i> Back to Orders
+                    </a>
+                    <button type="submit" class="btn btn-primary font-weight-bold px-4">
+                        <i class="fas fa-plus mr-1"></i> Create Order
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FashionHubWeb.Models;
-
 using Microsoft.AspNetCore.Authorization;
 
 namespace FashionHubWeb.Areas.Admin.Controllers
@@ -25,23 +24,18 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Coupons
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Coupons.ToListAsync());
+            return View(await _context.Coupons.Include(c => c.Orders).ToListAsync());
         }
 
         // GET: Coupons/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var coupon = await _context.Coupons
+                .Include(c => c.Orders)
                 .FirstOrDefaultAsync(m => m.CouponId == id);
-            if (coupon == null)
-            {
-                return NotFound();
-            }
+            if (coupon == null) return NotFound();
 
             return View(coupon);
         }
@@ -53,12 +47,15 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         }
 
         // POST: Coupons/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CouponId,CouponCode,DiscountAmount,ExpiryDate,Quantity,IsActive,DiscountType,MaxDiscount,MinOrderValue")] Coupon coupon)
         {
+            if (string.IsNullOrWhiteSpace(coupon.CouponId))
+                coupon.CouponId = "CPN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+            if (string.IsNullOrWhiteSpace(coupon.DiscountType))
+                coupon.DiscountType = "Fixed";
+
             if (ModelState.IsValid)
             {
                 _context.Add(coupon);
@@ -71,30 +68,19 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Coupons/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var coupon = await _context.Coupons.FindAsync(id);
-            if (coupon == null)
-            {
-                return NotFound();
-            }
+            if (coupon == null) return NotFound();
             return View(coupon);
         }
 
         // POST: Coupons/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("CouponId,CouponCode,DiscountAmount,ExpiryDate,Quantity,IsActive,DiscountType,MaxDiscount,MinOrderValue")] Coupon coupon)
         {
-            if (id != coupon.CouponId)
-            {
-                return NotFound();
-            }
+            if (id != coupon.CouponId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -106,13 +92,9 @@ namespace FashionHubWeb.Areas.Admin.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!CouponExists(coupon.CouponId))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -122,17 +104,12 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Coupons/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var coupon = await _context.Coupons
+                .Include(c => c.Orders)
                 .FirstOrDefaultAsync(m => m.CouponId == id);
-            if (coupon == null)
-            {
-                return NotFound();
-            }
+            if (coupon == null) return NotFound();
 
             return View(coupon);
         }
@@ -146,9 +123,9 @@ namespace FashionHubWeb.Areas.Admin.Controllers
             if (coupon != null)
             {
                 _context.Coupons.Remove(coupon);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -158,4 +135,3 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         }
     }
 }
-

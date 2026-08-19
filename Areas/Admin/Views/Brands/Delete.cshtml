@@ -1,33 +1,53 @@
 @model FashionHubWeb.Models.Brand
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Brand: " + Model.BrandName;
 }
 
-<h1>Delete</h1>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card card-outline card-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h3 class="card-title font-weight-bold mb-0">
+                    <i class="fas fa-exclamation-triangle mr-2"></i> Confirm Delete Brand
+                </h3>
+            </div>
+            <div class="card-body">
+                <p class="text-danger font-weight-bold mb-3">
+                    Are you sure you want to permanently delete this brand?
+                </p>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Brand</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BrandName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BrandName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="BrandId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+                <div class="border rounded p-3 bg-light mb-3">
+                    <div class="row mb-2">
+                        <div class="col-sm-4 font-weight-bold text-muted">Brand:</div>
+                        <div class="col-sm-8 font-weight-bold text-dark">@Model.BrandName</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 font-weight-bold text-muted">Brand ID:</div>
+                        <div class="col-sm-8 font-monospace text-muted">@Model.BrandId</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 font-weight-bold text-muted">Linked Products:</div>
+                        <div class="col-sm-8 text-danger font-weight-bold">@(Model.Products?.Count ?? 0) products</div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning small mb-0">
+                    <i class="fas fa-info-circle mr-1"></i> Deleting this brand may affect all linked products in your catalog.
+                </div>
+            </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Cancel
+                </a>
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="BrandId" />
+                    <button type="submit" class="btn btn-danger font-weight-bold px-4">
+                        <i class="fas fa-trash-alt mr-1"></i> Delete Brand
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

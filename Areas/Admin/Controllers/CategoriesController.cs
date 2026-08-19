@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FashionHubWeb.Models;
-
 using Microsoft.AspNetCore.Authorization;
 
 namespace FashionHubWeb.Areas.Admin.Controllers
@@ -25,23 +24,18 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            return View(await _context.Categories.Include(c => c.Products).ToListAsync());
         }
 
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var category = await _context.Categories
+                .Include(c => c.Products)
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
 
             return View(category);
         }
@@ -53,12 +47,13 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         }
 
         // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CategoryId,CategoryName")] Category category)
         {
+            if (string.IsNullOrWhiteSpace(category.CategoryId))
+                category.CategoryId = "CAT_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+
             if (ModelState.IsValid)
             {
                 _context.Add(category);
@@ -71,30 +66,19 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
             return View(category);
         }
 
         // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("CategoryId,CategoryName")] Category category)
         {
-            if (id != category.CategoryId)
-            {
-                return NotFound();
-            }
+            if (id != category.CategoryId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -106,13 +90,9 @@ namespace FashionHubWeb.Areas.Admin.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!CategoryExists(category.CategoryId))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -122,17 +102,12 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var category = await _context.Categories
+                .Include(c => c.Products)
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
 
             return View(category);
         }
@@ -146,9 +121,9 @@ namespace FashionHubWeb.Areas.Admin.Controllers
             if (category != null)
             {
                 _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -158,4 +133,3 @@ namespace FashionHubWeb.Areas.Admin.Controllers
         }
     }
 }
-

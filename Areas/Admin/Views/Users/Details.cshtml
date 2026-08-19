@@ -1,72 +1,134 @@
 @model FashionHubWeb.Models.User
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "User Details: " + Model.FullName;
 }
 
-<h1>Details</h1>
+<div class="row">
+    <!-- User Profile Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card card-primary card-outline shadow-sm">
+            <div class="card-body box-profile text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 font-weight-bold" style="width: 80px; height: 80px; font-size: 32px;">
+                    @(string.IsNullOrEmpty(Model.FullName) ? Model.Username.Substring(0, 1).ToUpper() : Model.FullName.Substring(0, 1).ToUpper())
+                </div>
 
-<div>
-    <h4>User</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Username)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Username)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FullName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RandomKey)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RandomKey)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.UserId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                <h3 class="profile-username font-weight-bold mb-1">@Model.FullName</h3>
+                <p class="text-muted mb-2">@@@Model.Username</p>
+
+                <div class="mb-3">
+                    @if (Model.Role == "Admin")
+                    {
+                        <span class="badge badge-danger px-3 py-2"><i class="fas fa-user-shield mr-1"></i> Administrator</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-info px-3 py-2"><i class="fas fa-user mr-1"></i> Customer</span>
+                    }
+                    
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge badge-success px-3 py-2 ml-1"><i class="fas fa-check-circle mr-1"></i> Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary px-3 py-2 ml-1"><i class="fas fa-ban mr-1"></i> Inactive</span>
+                    }
+                </div>
+
+                <ul class="list-group list-group-unbordered text-left mb-3">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b><i class="fas fa-envelope text-muted mr-2"></i>Email</b>
+                        <span>@Model.Email</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b><i class="fas fa-phone text-muted mr-2"></i>Phone</b>
+                        <span>@(Model.PhoneNumber == 0 ? "Not provided" : Model.PhoneNumber.ToString())</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b><i class="fas fa-map-marker-alt text-muted mr-2"></i>Address</b>
+                        <span>@Model.Address</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b><i class="fas fa-shopping-bag text-muted mr-2"></i>Total Orders</b>
+                        <span class="badge badge-primary">@(Model.Orders?.Count ?? 0)</span>
+                    </li>
+                </ul>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-warning btn-sm text-white font-weight-bold">
+                        <i class="fas fa-pencil-alt mr-1"></i> Edit User
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Order History -->
+    <div class="col-md-8">
+        <div class="card card-outline card-secondary shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-history text-secondary mr-2"></i> Order History (@(Model.Orders?.Count ?? 0))
+                </h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                @if (Model.Orders == null || !Model.Orders.Any())
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-box-open fa-3x mb-2 text-secondary"></i>
+                        <p>This user hasn't placed any orders yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <table class="table table-hover table-striped mb-0 text-nowrap">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th class="text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate))
+                            {
+                                var statusClass = order.Status switch
+                                {
+                                    "Completed" => "badge-success",
+                                    "Processing" => "badge-info",
+                                    "Shipped" => "badge-primary",
+                                    "Cancelled" => "badge-danger",
+                                    _ => "badge-warning"
+                                };
+
+                                <tr>
+                                    <td class="font-weight-bold font-monospace">
+                                        #@order.OrderId.Substring(0, Math.Min(8, order.OrderId.Length)).ToUpper()
+                                    </td>
+                                    <td>@(order.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                                    <td>@(order.OrderDetails?.Sum(od => od.Quantity) ?? 0) items</td>
+                                    <td class="font-weight-bold text-success">$@order.TotalAmount.ToString("0.00")</td>
+                                    <td>
+                                        <span class="badge @statusClass px-2 py-1">@order.Status</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <a asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-info btn-xs">
+                                            <i class="fas fa-eye mr-1"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
 </div>
